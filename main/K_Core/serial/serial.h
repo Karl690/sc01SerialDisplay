@@ -23,6 +23,13 @@
 #define SERIAL_BAUD_RATE 115200
 #define SERIAL_RX_BUFFER_SIZE 1024
 
+
+extern uint64_t serial_number_of_xmit;
+extern uint64_t serial_number_of_rcv;
+extern uint8_t serial_rcv_indicator;
+extern uint8_t serial_xmit_indicator;
+
+
 extern COMPORT ComUart1;
 extern COMPORT ComUart2;
 extern uint8_t serial_uart1_last_read_buffer[256];

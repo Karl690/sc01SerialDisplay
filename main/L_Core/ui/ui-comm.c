@@ -13,9 +13,9 @@ bool ui_comm_is_hex = true;
 lv_obj_t* ui_comm_btn_xmit;
 lv_obj_t* ui_comm_btn_rcv;
 lv_obj_t* ui_comm_btn_hex;
-lv_obj_t* ui_comm_lbl_xmit_icon;
+lv_obj_t* ui_comm_lbl_xmit_indicator;
 lv_obj_t* ui_comm_lbl_xmit_count;
-lv_obj_t* ui_comm_lbl_rcv_icon;
+lv_obj_t* ui_comm_lbl_rcv_indicator;
 lv_obj_t* ui_comm_lbl_rcv_count;
 lv_obj_t* ui_comm_display_panel;
 
@@ -53,6 +53,34 @@ void ui_comm_event_button_cb(lv_event_t* e)
 		break;
 	}
 }
+
+void ui_comm_update_indicator_timer(lv_timer_t * timer)
+{
+	if (!lv_obj_is_visible(ui_comm_screen)) return;
+	if (serial_rcv_indicator > 0)
+	{
+		serial_rcv_indicator--;
+		lv_obj_set_style_text_color(ui_comm_lbl_rcv_indicator, lv_color_hex(UI_BUTTON_ACTIVE_FG_COLOR), LV_PART_MAIN); 
+	}
+	else
+	{
+		lv_obj_set_style_text_color(ui_comm_lbl_rcv_indicator, lv_color_hex(UI_BUTTON_DISABLE_BG_COLOR), LV_PART_MAIN); 
+	}
+	if (serial_xmit_indicator > 0)
+	{
+		serial_xmit_indicator--;
+		lv_obj_set_style_text_color(ui_comm_lbl_xmit_indicator, lv_color_hex(UI_BUTTON_ACTIVE_FG_COLOR), LV_PART_MAIN); 
+	}
+	else
+	{
+		lv_obj_set_style_text_color(ui_comm_lbl_xmit_indicator, lv_color_hex(UI_BUTTON_DISABLE_BG_COLOR), LV_PART_MAIN); 
+	}
+	sprintf(ui_temp_string, "%d", (int)serial_number_of_rcv);
+	lv_label_set_text(ui_comm_lbl_rcv_count, ui_temp_string);
+	sprintf(ui_temp_string, "%d", (int)serial_number_of_xmit);
+	lv_label_set_text(ui_comm_lbl_xmit_count, ui_temp_string);
+}
+
 void ui_comm_screen_init(void)
 {	
 	const lv_font_t* font = &lv_font_montserrat_16;
@@ -78,10 +106,12 @@ void ui_comm_screen_init(void)
 	obj = ui_create_label(ui_comm_screen, LV_SYMBOL_UP, &lv_font_montserrat_20);
 	lv_obj_set_style_text_color(obj, lv_color_hex(UI_BUTTON_DISABLE_FG_COLOR), LV_PART_MAIN);	
 	lv_obj_set_pos(obj, x, y);
-	ui_comm_lbl_xmit_icon = obj;
+	ui_comm_lbl_xmit_indicator = obj;
 	
-	obj = ui_create_label(ui_comm_screen, "0", font);
-	lv_obj_set_pos(obj, x + 40, y);
+	obj = ui_create_label(ui_comm_screen, "0", &lv_font_montserrat_14);
+	lv_obj_set_pos(obj, x + 30, y + 5);
+	lv_obj_set_width(obj, 50);
+	lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_RIGHT, 0);	
 	ui_comm_lbl_xmit_count = obj;
 	y += 25;
 	
@@ -100,10 +130,14 @@ void ui_comm_screen_init(void)
 	obj = ui_create_label(ui_comm_screen, LV_SYMBOL_DOWN, &lv_font_montserrat_20);
 	lv_obj_set_style_text_color(obj, lv_color_hex(UI_BUTTON_DISABLE_FG_COLOR), LV_PART_MAIN);	
 	lv_obj_set_pos(obj, x, y);
-	ui_comm_lbl_rcv_icon = obj;
+	ui_comm_lbl_rcv_indicator = obj;
 	
-	obj = ui_create_label(ui_comm_screen, "0", font);
-	lv_obj_set_pos(obj, x + 40, y);
+	
+	obj = ui_create_label(ui_comm_screen, "0", &lv_font_montserrat_14);
+	lv_obj_set_pos(obj, x + 30, y);
+	lv_obj_set_width(obj, 50);
+	lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_RIGHT, 0);
+	ui_comm_lbl_rcv_count = obj;
 	y += 25;
 	
 	obj = ui_create_button(ui_comm_screen, "HEX", btn_width, btn_height, 2, font, ui_comm_event_button_cb, (void*)UI_COMM_BTN_HEX);
@@ -122,7 +156,6 @@ void ui_comm_screen_init(void)
 	lv_obj_set_style_pad_all(obj, 0, LV_PART_MAIN);
 	lv_obj_set_style_bg_color(obj, lv_color_hex(UI_PANEL_BACGROUND_COLOR), LV_PART_MAIN);
 	ui_comm_display_panel = obj;
-	uint8_t width = lv_obj_get_width(obj) - 10;
 	
 	for (uint8_t i = 0; i < UI_COMM_LOG_MAX_LINE; i++)
 	{
@@ -133,8 +166,8 @@ void ui_comm_screen_init(void)
 		lv_obj_set_width(obj, lv_pct(95)); 
 		lv_obj_set_x(obj, 5); 
 		lv_obj_add_flag(obj, LV_OBJ_FLAG_HIDDEN);
-		//lv_obj_scroll_to_y(ui_comm_display_panel, y, LV_ANIM_OFF);
 	}
+	lv_timer_create(ui_comm_update_indicator_timer, 500, NULL);
 }
 
 char ui_comm_temp_string1[1024] = { 0 };
@@ -155,8 +188,6 @@ void ui_comm_add_event(const char* log, uint32_t color, bool ishex)
 		uint16_t len =  strlen(log);
 		if (numberofcharcterstoadd > len) numberofcharcterstoadd = len;
 		int count = 0;
-		int hexIdx = 0;
-		int asciiIdx = 0;
 		char* hexString = ui_comm_temp_string1;
 		char* asciiString = ui_comm_temp_string2;
 		

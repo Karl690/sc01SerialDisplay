@@ -20,6 +20,10 @@ uint8_t serial_uart2_rx_buffer[RX_BUF_SIZE];
 uint8_t serial_uart2_rx_urgent_buffer[RX_BUF_SIZE];
 uint8_t serial_uart2_tx_buffer[TX_BUF_SIZE];
 
+uint64_t serial_number_of_xmit = 0;
+uint64_t serial_number_of_rcv = 0;
+uint8_t serial_rcv_indicator = 0;
+uint8_t serial_xmit_indicator = 0;
 
 uint8_t serial_rx_work_buffer[RX_BUF_SIZE];
 uint8_t serial_rx_work_urgent_buffer[RX_URGENT_BUF_SIZE];
@@ -56,6 +60,8 @@ bool serial_uart_write_byte(int uart_port, char byte)
 		// add your code to handle sending failure here
 		return false;
 	}
+	serial_xmit_indicator = 3;
+	serial_number_of_xmit++;
 	return true;
 }
 char serial_uart_read_byte(int uart_port)
@@ -77,6 +83,8 @@ void* serial_uart1_read_task(void* param)
 		}
 		//memcpy(serial_uart1_last_read_buffer, buffer, len);
 		//serial_uart1_last_read_buffer[len] = 0;
+		serial_number_of_rcv +=len;
+		serial_rcv_indicator = 3;
 		communication_add_buffer_to_serial_buffer(&ComUart1.RxBuffer, buffer, len);
 		//communication_process_rx_serial_characters(&ComUart1);
 	}
