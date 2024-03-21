@@ -14,7 +14,7 @@
 
 #define BLE_TAG "HYREL_BLE"
 #define BLE_PORT_ID				0x80
-#define BLE_SERVER_DEVICE_NAME "ESP32_S3_TTYGO"
+#define BLE_SERVER_DEVICE_NAME "ESP32_S3_SC01"
 
 #define spp_sprintf(s,...)         sprintf((char*)(s), ##__VA_ARGS__)
 #define SPP_DATA_MAX_LEN           (1024)

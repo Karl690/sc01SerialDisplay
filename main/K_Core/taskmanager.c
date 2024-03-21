@@ -114,15 +114,15 @@ void BlinkHeartBeat(void)
 
 void CheckBluetoothConnection(void)
 {
-	if (ble_server_pairing_countdown > 0 && ble_server_status == BLE_SERVER_PAIRED)
-	{
-		// if keep the pairing status, close the connection.
-		ble_server_pairing_countdown--;
-		if (ble_server_pairing_countdown == 0)
-		{
-			ble_server_disconnect();
-		}
-	}
+//	if (ble_server_pairing_countdown > 0 && ble_server_status == BLE_SERVER_PAIRED)
+//	{
+//		// if keep the pairing status, close the connection.
+//		ble_server_pairing_countdown--;
+//		if (ble_server_pairing_countdown == 0)
+//		{
+//			ble_server_disconnect();
+//		}
+//	}
 }
 
 void ReportToolInfo()

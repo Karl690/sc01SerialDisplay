@@ -12,8 +12,6 @@ void tools_init()
 {
 	//storage_partition_read(STORAGE_ADDRESS_TOOLINFO, (uint8_t*)&toolInfo, sizeof(ToolInfo));
 	storage_nvs_get_blob(NVS_KEY_TOOLINFO, &toolInfo);
-	if (toolInfo.Address >= 99) toolInfo.Address = 99;
-	ui_ble_set_headindex(toolInfo.Address);
 }
 
 void tools_report_information()
