@@ -7,9 +7,10 @@
 
 
 lv_obj_t* ui_comm_screen;
-bool ui_comm_is_xmit = true;
-bool ui_comm_is_rcv = true;
-bool ui_comm_is_hex = true;
+bool ui_comm_is_xmit = false;
+bool ui_comm_is_rcv = false;
+bool ui_comm_is_hex = false;
+bool ui_comm_is_ack = false;
 lv_obj_t* ui_comm_btn_xmit;
 lv_obj_t* ui_comm_btn_rcv;
 lv_obj_t* ui_comm_btn_hex;
@@ -18,10 +19,14 @@ lv_obj_t* ui_comm_lbl_xmit_count;
 lv_obj_t* ui_comm_lbl_rcv_indicator;
 lv_obj_t* ui_comm_lbl_rcv_count;
 lv_obj_t* ui_comm_display_panel;
+lv_obj_t* ui_comm_lbl_rx_acks;
+lv_obj_t* ui_comm_lbl_tx_acks;
+lv_obj_t* ui_comm_btn_ack;
 
 //char ui_comm_log_buffer[UI_COMM_LOG_MAX_LINE][UI_COMM_LOG_MAX_LINE_CHARS];
 uint16_t ui_comm_log_head = 0;
 uint16_t ui_comm_log_tail = 0;
+
 void ui_comm_event_button_cb(lv_event_t* e)
 {
 	uint8_t code = (uint8_t)(int)lv_event_get_user_data(e);
@@ -34,8 +39,7 @@ void ui_comm_event_button_cb(lv_event_t* e)
 		ui_transform_screen(SCREEN_PCT);
 		break;
 	case UI_COMM_BTN_PING:
-		communication_add_char_to_serial_buffer(&ComUart1.TxBuffer, 0x7);
-		ui_comm_add_event((const char*)"Send Ping 0x7", UI_COMM_COLOR_SEND, false);
+		SendPing();
 		break;
 	case UI_COMM_BTN_XMIT:
 		ui_comm_is_xmit = !ui_comm_is_xmit;
@@ -45,11 +49,14 @@ void ui_comm_event_button_cb(lv_event_t* e)
 	case UI_COMM_BTN_RCV:
 		ui_comm_is_rcv = !ui_comm_is_rcv;
 		ui_change_button_color(ui_comm_btn_rcv, ui_comm_is_rcv ? UI_BUTTON_ACTIVE_BG_COLOR : UI_BUTTON_DISABLE_BG_COLOR, ui_comm_is_rcv ? UI_BUTTON_ACTIVE_FG_COLOR : UI_BUTTON_DISABLE_FG_COLOR);
-		//ui_comm_add_event((const char*)"1234567890\n1234567890\n1234567890\n", UI_COMM_COLOR_RECEIVE, ui_comm_is_hex);
 		break;
 	case UI_COMM_BTN_HEX:
 		ui_comm_is_hex = !ui_comm_is_hex;
 		ui_change_button_color(ui_comm_btn_hex, ui_comm_is_hex? UI_BUTTON_ACTIVE_BG_COLOR : UI_BUTTON_DISABLE_BG_COLOR, ui_comm_is_hex ? UI_BUTTON_ACTIVE_FG_COLOR : UI_BUTTON_DISABLE_FG_COLOR);
+		break;
+	case UI_COMM_BTN_ACK:
+		ui_comm_is_ack = !ui_comm_is_ack;
+		ui_change_button_color(ui_comm_btn_ack, ui_comm_is_ack ? UI_BUTTON_ACTIVE_BG_COLOR : UI_BUTTON_DISABLE_BG_COLOR, ui_comm_is_ack ? UI_BUTTON_ACTIVE_FG_COLOR : UI_BUTTON_DISABLE_FG_COLOR);
 		break;
 	}
 }
@@ -57,28 +64,34 @@ void ui_comm_event_button_cb(lv_event_t* e)
 void ui_comm_update_indicator_timer(lv_timer_t * timer)
 {
 	if (!lv_obj_is_visible(ui_comm_screen)) return;
-	if (serial_rcv_indicator > 0)
+	if (!MasterCommPort) return;
+	if (MasterCommPort->RxIndicator > 0)
 	{
-		serial_rcv_indicator--;
+		MasterCommPort->RxIndicator--;
 		lv_obj_set_style_text_color(ui_comm_lbl_rcv_indicator, lv_color_hex(UI_BUTTON_ACTIVE_FG_COLOR), LV_PART_MAIN); 
 	}
 	else
 	{
 		lv_obj_set_style_text_color(ui_comm_lbl_rcv_indicator, lv_color_hex(UI_BUTTON_DISABLE_BG_COLOR), LV_PART_MAIN); 
 	}
-	if (serial_xmit_indicator > 0)
+	if (MasterCommPort->TxIndicator > 0)
 	{
-		serial_xmit_indicator--;
+		MasterCommPort->TxIndicator--;
 		lv_obj_set_style_text_color(ui_comm_lbl_xmit_indicator, lv_color_hex(UI_BUTTON_ACTIVE_FG_COLOR), LV_PART_MAIN); 
 	}
 	else
 	{
 		lv_obj_set_style_text_color(ui_comm_lbl_xmit_indicator, lv_color_hex(UI_BUTTON_DISABLE_BG_COLOR), LV_PART_MAIN); 
 	}
-	sprintf(ui_temp_string, "%d", (int)serial_number_of_rcv);
+	sprintf(ui_temp_string, "%d", (int)MasterCommPort->NumberOfCharactersReceived);
 	lv_label_set_text(ui_comm_lbl_rcv_count, ui_temp_string);
-	sprintf(ui_temp_string, "%d", (int)serial_number_of_xmit);
+	sprintf(ui_temp_string, "%d", (int)MasterCommPort->NumberOfCharactersSent);
 	lv_label_set_text(ui_comm_lbl_xmit_count, ui_temp_string);
+	
+	sprintf(ui_temp_string, "%d", (int)MasterCommPort->TxAcknowledgeCounter);
+	lv_label_set_text(ui_comm_lbl_tx_acks, ui_temp_string);
+	sprintf(ui_temp_string, "%d", (int)MasterCommPort->RxAcknowledgeCounter);
+	lv_label_set_text(ui_comm_lbl_rx_acks, ui_temp_string);
 }
 
 void ui_comm_screen_init(void)
@@ -116,13 +129,13 @@ void ui_comm_screen_init(void)
 	y += 25;
 	
 	obj = ui_create_button(ui_comm_screen, "XMIT", btn_width, btn_height, 2, font, ui_comm_event_button_cb, (void*)UI_COMM_BTN_XMIT);
-	ui_change_button_color(obj, UI_BUTTON_ACTIVE_BG_COLOR, UI_BUTTON_ACTIVE_FG_COLOR);
+	ui_change_button_color(obj, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
 	lv_obj_set_pos(obj, x, y);
 	ui_comm_btn_xmit = obj;
 	
 	y += btn_height + gap;
 	obj = ui_create_button(ui_comm_screen, "RCV", btn_width, btn_height, 2, font, ui_comm_event_button_cb, (void*)UI_COMM_BTN_RCV);
-	ui_change_button_color(obj, UI_BUTTON_ACTIVE_BG_COLOR, UI_BUTTON_ACTIVE_FG_COLOR);
+	ui_change_button_color(obj, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
 	lv_obj_set_pos(obj, x, y);
 	ui_comm_btn_rcv = obj;
 	
@@ -141,7 +154,7 @@ void ui_comm_screen_init(void)
 	y += 25;
 	
 	obj = ui_create_button(ui_comm_screen, "HEX", btn_width, btn_height, 2, font, ui_comm_event_button_cb, (void*)UI_COMM_BTN_HEX);
-	ui_change_button_color(obj, UI_BUTTON_ACTIVE_BG_COLOR, UI_BUTTON_ACTIVE_FG_COLOR);
+	ui_change_button_color(obj, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
 	lv_obj_set_pos(obj, x, y);
 	ui_comm_btn_hex = obj;
 	
@@ -151,7 +164,7 @@ void ui_comm_screen_init(void)
 	
 	
 	obj = lv_obj_create(ui_comm_screen);
-	lv_obj_set_size(obj, SCREEN_WIDTH - btn_width - gap * 3, SCREEN_HEIGHT - 50);
+	lv_obj_set_size(obj, SCREEN_WIDTH - btn_width - gap * 3, SCREEN_HEIGHT - 80);
 	lv_obj_set_pos(obj, btn_width + gap*3, 40+ gap); 
 	lv_obj_set_style_pad_all(obj, 0, LV_PART_MAIN);
 	lv_obj_set_style_bg_color(obj, lv_color_hex(UI_PANEL_BACGROUND_COLOR), LV_PART_MAIN);
@@ -167,7 +180,26 @@ void ui_comm_screen_init(void)
 		lv_obj_set_x(obj, 5); 
 		lv_obj_add_flag(obj, LV_OBJ_FLAG_HIDDEN);
 	}
+	x = btn_width + gap * 3;
+	y = SCREEN_HEIGHT - 30;
+	obj = ui_create_label(ui_comm_screen, "TxAck#:", &lv_font_montserrat_14);
+	lv_obj_set_pos(obj, x, y);
+	obj = ui_create_label(ui_comm_screen, "0", &lv_font_montserrat_14);
+	lv_obj_set_pos(obj, x + 55, y); ui_comm_lbl_tx_acks = obj;
+	x +=120;
+	obj = ui_create_label(ui_comm_screen, "RxAck#:", &lv_font_montserrat_14);
+	lv_obj_set_pos(obj, x, y);
+	obj = ui_create_label(ui_comm_screen, "0", &lv_font_montserrat_14);
+	lv_obj_set_pos(obj, x + 55, y); ui_comm_lbl_rx_acks = obj;
+	
+	x = SCREEN_WIDTH - btn_width - 5;
+	obj = ui_create_button(ui_comm_screen, "ACK", btn_width, btn_height-5, 2, font, ui_comm_event_button_cb, (void*)UI_COMM_BTN_ACK);
+	ui_change_button_color(obj, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
+	lv_obj_set_pos(obj, x, y);
+	ui_comm_btn_ack = obj;
+	
 	lv_timer_create(ui_comm_update_indicator_timer, 500, NULL);
+	
 }
 
 char ui_comm_temp_string1[1024] = { 0 };

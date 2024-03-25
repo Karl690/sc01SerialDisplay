@@ -24,19 +24,14 @@
 #define SERIAL_RX_BUFFER_SIZE 1024
 
 
-extern uint64_t serial_number_of_xmit;
-extern uint64_t serial_number_of_rcv;
-extern uint8_t serial_rcv_indicator;
-extern uint8_t serial_xmit_indicator;
-
-
 extern COMPORT ComUart1;
 extern COMPORT ComUart2;
+extern COMPORT* MasterComPort;
 extern uint8_t serial_uart1_last_read_buffer[256];
 extern uint8_t serial_uart2_last_read_buffer[256];
 void serial_init();
 
-bool serial_uart_write_byte(int uart_port, char byte);
+bool serial_uart_write_byte(COMPORT* comport, char byte);
 void serial_add_char_to_buffer(ComBuffer *targetBuffer, uint8_t RawChar);
 void serial_add_string_to_buffer(ComBuffer *targetBuffer, char* SourceString);
 void serial_add_buffer_to_buffer(ComBuffer *targetBuffer, uint8_t* buf, uint16_t size);

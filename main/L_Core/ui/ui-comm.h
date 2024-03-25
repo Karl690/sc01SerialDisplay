@@ -9,6 +9,7 @@ enum
 	UI_COMM_BTN_XMIT,
 	UI_COMM_BTN_RCV,
 	UI_COMM_BTN_HEX,
+	UI_COMM_BTN_ACK,
 };
 
 #define UI_COMM_LOG_MAX_LINE 40
@@ -18,6 +19,8 @@ enum
 #define UI_COMM_COLOR_RECEIVE	0xFFFFFF
 extern lv_obj_t* ui_comm_screen;
 
+extern bool ui_comm_is_ack;
+extern bool ui_comm_is_hex;
 void ui_comm_screen_init(void);
 void ui_comm_add_event(const char* log, uint32_t color, bool ishex);
 void ui_comm_add_log(const char* log, uint32_t color);

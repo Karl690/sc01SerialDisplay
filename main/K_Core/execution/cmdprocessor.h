@@ -1,8 +1,8 @@
 #pragma once
 #include "main.h"
 
-#define SIZE_OF_COMMAND_QUEUE 100
-#define MAX_COMMAND_LEN 50
+#define SIZE_OF_COMMAND_QUEUE 30
+#define MAX_COMMAND_LEN 90
 
 #define COMMENT_STRING_LENGTH   	(256+3)	//+3 for leading and trailing delim + NULL_CHAR
 #define ARG_PRESENT(arg)   ((uint16_t)arg != 0xffff)

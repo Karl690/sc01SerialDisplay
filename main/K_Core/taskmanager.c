@@ -22,7 +22,7 @@ const PFUNC F1000HZ[NUM_1000HZ] =
 	communication_check_tx,
 	communication_check_rx,
 	Spare,
-	parser_incomming_process,
+	Spare,
 	cmd_sequener,
 	Spare,
 	Spare,

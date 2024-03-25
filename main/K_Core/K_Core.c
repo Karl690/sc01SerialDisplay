@@ -27,6 +27,7 @@ void K_Core_Main()
 	// Init_USB_DEVICE(); //DO NOT call this BEFORE SYSTICK_Config, it will freeze in a loop because of hal_Delay()
 	
 	Init_TaskManager();
+	SendPing();
 	//xTaskCreatePinnedToCore(forground_task, "forground_task", 1024 * 2, NULL, 10, NULL, 1);
 	while (1)
 	{	

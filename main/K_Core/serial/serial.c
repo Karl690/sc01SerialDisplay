@@ -20,15 +20,10 @@ uint8_t serial_uart2_rx_buffer[RX_BUF_SIZE];
 uint8_t serial_uart2_rx_urgent_buffer[RX_BUF_SIZE];
 uint8_t serial_uart2_tx_buffer[TX_BUF_SIZE];
 
-uint64_t serial_number_of_xmit = 0;
-uint64_t serial_number_of_rcv = 0;
-uint8_t serial_rcv_indicator = 0;
-uint8_t serial_xmit_indicator = 0;
-
 uint8_t serial_rx_work_buffer[RX_BUF_SIZE];
 uint8_t serial_rx_work_urgent_buffer[RX_URGENT_BUF_SIZE];
 COMPORT ComUart1, ComUart2;
-
+COMPORT* MasterComPort = &ComUart1;
 uint8_t serial_uart1_last_read_buffer[256];
 uint8_t serial_uart2_last_read_buffer[256];
 void serial_uart_init(uint8_t port, int tx_pin, int rx_pin, int rts_pin, int cts_pin, bool is485)
@@ -53,22 +48,16 @@ void serial_uart_init(uint8_t port, int tx_pin, int rx_pin, int rts_pin, int cts
 	}
 }
 
-bool serial_uart_write_byte(int uart_port, char byte)
+bool serial_uart_write_byte(COMPORT* comport, char byte)
 {
-	if (uart_write_bytes(uart_port, &byte, 1) != 1) {
+	if (uart_write_bytes(comport->uart_id, &byte, 1) != 1) {
 		ESP_LOGE(TAG, "Send data critical failure.");
 		// add your code to handle sending failure here
 		return false;
 	}
-	serial_xmit_indicator = 3;
-	serial_number_of_xmit++;
+	comport->TxIndicator = 3;
+	comport->NumberOfCharactersSent++;
 	return true;
-}
-char serial_uart_read_byte(int uart_port)
-{
-	char byte;
-	if(uart_read_bytes(uart_port, &byte, 1, (100 / portTICK_PERIOD_MS)) == 0) return 0;
-	return byte;
 }
 
 void* serial_uart1_read_task(void* param)
@@ -81,12 +70,9 @@ void* serial_uart1_read_task(void* param)
 			buffer[0] = 0;
 			continue;
 		}
-		//memcpy(serial_uart1_last_read_buffer, buffer, len);
-		//serial_uart1_last_read_buffer[len] = 0;
-		serial_number_of_rcv +=len;
-		serial_rcv_indicator = 3;
+		ComUart1.NumberOfCharactersReceived += len;
+		ComUart1.RxIndicator = 3;
 		communication_add_buffer_to_serial_buffer(&ComUart1.RxBuffer, buffer, len);
-		//communication_process_rx_serial_characters(&ComUart1);
 	}
 	return NULL;
 }
@@ -100,10 +86,7 @@ void* serial_uart2_read_task(void* param)
 			buffer[0] = 0;
 			continue;
 		}
-//		memcpy(serial_uart2_last_read_buffer, buffer, len);
-//		serial_uart2_last_read_buffer[len] = 0;
 		communication_add_buffer_to_serial_buffer(&ComUart2.RxBuffer, buffer, len);
-		//communication_process_rx_serial_characters(&ComUart2);
 	}
 	return NULL;
 }

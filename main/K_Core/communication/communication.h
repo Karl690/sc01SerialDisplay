@@ -90,11 +90,21 @@ typedef struct {
 typedef struct {
 	int				uart_id; //esp32s3 support UART_0, 1, 2, 
 	ComBuffer       RxBuffer; //standard incoming receive buffer, circular
-	ComBuffer RxUrgentBuffer; //Priority Gocode rx buffer, bypasses big input que to execute in front of qued commands
+	ComBuffer		RxUrgentBuffer; //Priority Gocode rx buffer, bypasses big input que to execute in front of qued commands
 	ComBuffer       TxBuffer; //outgoing characters in que
-	uint32_t      UrgentFlag; //set when 911 character is received, signifying the beginning of a priority gcode line
-	uint32_t     AcksWaiting; //acknowledge waiting to implement Handshake
+	uint32_t		UrgentFlag; //set when 911 character is received, signifying the beginning of a priority gcode line
 	ComPortType      ComType; // Main com, aux com, machine interface
+	int		TxAcknowledgeCounter; //acknowledge waiting to implement Handshake, if 0 it means OK to send next cmdline
+	//If >5 it means do not send more cmd lines UNTILL we have received some ACK from client
+	int		 RxAcknowledgeCounter; //this flag tells the TX to send an ackowledge after we receive a command line
+	
+	uint8_t			RxIndicator; //when it recieved data, it should be set 3. and after that , it should decrease util it becomes 0
+	uint8_t			TxIndicator; //when it transter data, it should be set 3. and after that , it should decrease util it becomes 0
+	bool pingSent; //when ping, it set as 1, and when recieved reply, it should unset 
+	uint32_t		NumberOfCharactersReceived; //keep track of incoming characters
+	uint32_t		NumberOfCharactersSent; //keep track of incoming characters
+	char			CommandLineBuffer[256];
+	uint8_t			CommandLineIdx;
 } COMPORT;
 
 
@@ -123,7 +133,7 @@ extern ComBuffer RawRxUrgentComBuffer;
 extern COMPORT* MasterCommPort;
 void communication_buffers_serial_init(uint8_t UartIndex, COMPORT* ComPort, uint8_t* RxBuffer, uint8_t* RxUgrentBuffer, uint8_t* TxBuffer);
 void communication_buffers_ble_init(uint8_t id, BleDevice* device);
-void communication_process_rx_serial_characters(COMPORT* comport);
+void communication_process_rx_serial_characters(COMPORT* );
 void communication_process_rx_ble_characters(BleDevice* device, uint8_t* buf, uint16_t len);
 
 
@@ -135,3 +145,7 @@ void communication_add_buffer_to_ble_buffer(BleBuffer *targetBuffer, uint8_t* bu
 void communication_add_string_to_ble_buffer(BleBuffer *targetBuffer, char* SourceString);
 void communication_check_tx();
 void communication_check_rx();
+
+void communication_tx_commandline(COMPORT* comport, char* commandline);
+
+void SendPing();

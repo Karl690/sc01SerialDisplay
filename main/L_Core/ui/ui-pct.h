@@ -34,34 +34,35 @@
 #define KEYBOARD_COMM_STRING "G6 B18\n"
 #define KEYBOARD_HOME_STRING "G6 B19\n"
 
-enum
+enum KEYCODE
 {
-	UI_PCT_KEYBOARD_0,
-	UI_PCT_KEYBOARD_1,
-	UI_PCT_KEYBOARD_2,
-	UI_PCT_KEYBOARD_3,
-	UI_PCT_KEYBOARD_4,
-	UI_PCT_KEYBOARD_5,
-	UI_PCT_KEYBOARD_6,
-	UI_PCT_KEYBOARD_7,
-	UI_PCT_KEYBOARD_8,
-	UI_PCT_KEYBOARD_9,
-	UI_PCT_KEYBOARD_CLEAR,
-	UI_PCT_KEYBOARD_BACKSPACE,
-	UI_PCT_KEYBOARD_POINT,
-	UI_PCT_KEYBOARD_PROG,
-	UI_PCT_KEYBOARD_ENTER,
-	UI_PCT_KEYBOARD_START,
-	UI_PCT_KEYBOARD_STOP,
-	UI_PCT_KEYBOARD_DIAG,
-	UI_PCT_KEYBOARD_COMM,
-	UI_PCT_KEYBOARD_HOME,
+	KEYBOARD_0 = 0,
+	KEYBOARD_1,
+	KEYBOARD_2,
+	KEYBOARD_3,
+	KEYBOARD_4,
+	KEYBOARD_5,
+	KEYBOARD_6,
+	KEYBOARD_7,
+	KEYBOARD_8,
+	KEYBOARD_9,
+	KEYBOARD_CLEAR,
+	KEYBOARD_BACKSPACE,
+	KEYBOARD_POINT,
+	KEYBOARD_PROG,
+	KEYBOARD_ENTER,
+	KEYBOARD_START,
+	KEYBOARD_STOP,
+	KEYBOARD_DIAG,
+	KEYBOARD_COMM,
+	KEYBOARD_HOME,
 };
-
-
 
 extern lv_obj_t* ui_pct_screen;
 
 void ui_pct_screen_init(void);
-void ui_pct_update_line(int index, const char* lineString);
-void ui_pct_update_prog_mode(int value);
+
+void UpdateLabelText(int index, char* value);
+void UpdateLabelColor(int index, char* value);
+void UpdateButtonText(int index, char* value);
+void UpdateButtonColor(int index, char* value);

@@ -69,7 +69,7 @@ void ui_change_button_color(lv_obj_t* button, uint32_t bg, uint32_t fg)
 {
 	lv_obj_set_style_bg_color(button, lv_color_hex(bg), LV_PART_MAIN | LV_STATE_DEFAULT);
 	lv_obj_t* label = lv_obj_get_child(button, 0);
-	if (label)	lv_obj_set_style_text_color(label, lv_color_hex(fg), LV_PART_MAIN);
+	if (label)	lv_obj_set_style_text_color(label, lv_color_hex(fg), LV_PART_MAIN | LV_STATE_DEFAULT);
 }
 lv_obj_t* ui_create_button(lv_obj_t* parent,
 	const char* text,
