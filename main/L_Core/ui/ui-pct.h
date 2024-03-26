@@ -33,6 +33,7 @@
 #define KEYBOARD_DIAG_STRING "G6 B17\n"
 #define KEYBOARD_COMM_STRING "G6 B18\n"
 #define KEYBOARD_HOME_STRING "G6 B19\n"
+#define KEYBOARD_BACK_STRING "G6 B20\n"
 
 enum KEYCODE
 {
@@ -56,6 +57,7 @@ enum KEYCODE
 	KEYBOARD_DIAG,
 	KEYBOARD_COMM,
 	KEYBOARD_HOME,
+	KEYBOARD_BACK
 };
 
 extern lv_obj_t* ui_pct_screen;

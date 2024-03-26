@@ -13,7 +13,7 @@ lv_obj_t* ui_pct_line_2;
 lv_obj_t* ui_pct_line_3;
 lv_obj_t* ui_pct_line_4;
 lv_obj_t* ui_pct_btn_prog;
-lv_obj_t* ui_pct_keyboard[KEYBOARD_HOME+1];
+lv_obj_t* ui_pct_keyboard[KEYBOARD_BACK+1];
 lv_obj_t* ui_pct_label_lines[5];
 bool ui_pct_is_refresh_line = false;
 char ui_pct_lines[5][50] = { 0 };
@@ -34,7 +34,6 @@ void ui_pct_event_button_cb(lv_event_t* e)
 	case KEYBOARD_7: strcpy(ui_pct_temp, KEYBOARD_7_STRING); break;
 	case KEYBOARD_8: strcpy(ui_pct_temp, KEYBOARD_8_STRING); break;
 	case KEYBOARD_9: strcpy(ui_pct_temp, KEYBOARD_9_STRING); break;
-
 		
 	case KEYBOARD_BACKSPACE: strcpy(ui_pct_temp, KEYBOARD_BACKSPACE_STRING); break;
 	case KEYBOARD_CLEAR: strcpy(ui_pct_temp, KEYBOARD_CLEAR_STRING); break;
@@ -46,6 +45,7 @@ void ui_pct_event_button_cb(lv_event_t* e)
 	case KEYBOARD_ENTER: strcpy(ui_pct_temp, KEYBOARD_ENTER_STRING); break;
 	case KEYBOARD_COMM:	ui_transform_screen(SCREEN_COMM);		return;
 	case KEYBOARD_HOME:	ui_transform_screen(SCREEN_HOME);		return;
+	case KEYBOARD_BACK: strcpy(ui_pct_temp, KEYBOARD_BACK_STRING); break;
 	}
 	communication_tx_commandline(MasterCommPort, ui_pct_temp);
 }
@@ -60,7 +60,7 @@ void ui_pct_update_lines_timer(lv_timer_t * timer)
 
 void ui_pct_screen_init(void)
 {	
-	const lv_font_t* font = &lv_font_montserrat_20;
+	const lv_font_t* font = &lv_font_montserrat_16;
 	ui_pct_screen = ui_create_screen();	
 	
 	LV_IMG_DECLARE(img_mark);
@@ -79,8 +79,8 @@ void ui_pct_screen_init(void)
 	lv_obj_set_pos(logbutton, 20, 5);
 	
 	
-	obj = ui_create_label(ui_pct_screen, "HYPERCLEAN MEGASONIC", &mono_bold_24);	
-	lv_obj_set_pos(obj, 120, 15);
+	obj = ui_create_label(ui_pct_screen, "HYPERCLEAN MEGASONIC", &lv_font_montserrat_20);	
+	lv_obj_set_pos(obj, 220, 15);
 	ui_pct_line_4 = obj;
 	//obj = ui_create_label(ui_pct_screen, SYSTEMVERSION, &mono_regualr_16);	
 	//lv_obj_set_pos(obj, 100, 40);
@@ -93,8 +93,11 @@ void ui_pct_screen_init(void)
 	
 	int x = 20, y = 60;
 	
-	obj = ui_create_button(ui_pct_screen, "CLEAR", button_large_width, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_CLEAR);
-	lv_obj_set_pos(obj, SCREEN_WIDTH - button_large_width - 5, 2); ui_pct_keyboard[KEYBOARD_CLEAR] = obj;
+	obj = ui_create_button(ui_pct_screen, "<<", button_w, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_BACK);
+	lv_obj_set_pos(obj, button_large_width + gap * 3, 2); ui_pct_keyboard[KEYBOARD_BACK] = obj;
+	
+	obj = ui_create_button(ui_pct_screen, "CLR", button_w, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_CLEAR);
+	lv_obj_set_pos(obj, SCREEN_WIDTH - button_w - 5, 2); ui_pct_keyboard[KEYBOARD_CLEAR] = obj;
 	 
 	obj = ui_create_button(ui_pct_screen, LV_SYMBOL_REFRESH, button_large_width, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_COMM);
 	lv_obj_set_pos(obj, x, y); x += button_large_width + gap; ui_pct_keyboard[KEYBOARD_COMM] = obj;
