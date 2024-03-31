@@ -23,7 +23,7 @@ void cmd_sequener()
 void parseLineCommandData(char* cmd)
 {
 	int index = -1;
-	char* temp = strstr(cmd, "=");// cmd.IndexOf("=");
+	char* temp = strstr(cmd, "*");// cmd.IndexOf("*");
 	if (!temp) return;
 	index = temp - cmd;
 	if (index < 2) return;
