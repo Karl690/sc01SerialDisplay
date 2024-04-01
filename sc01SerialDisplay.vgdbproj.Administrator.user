@@ -9,13 +9,14 @@
       <Syscalls />
       <CXXCatchpoints />
     </CatchpointConfiguration>
+    <VisualWatchPreferences />
     <MaskInterruptsWhileStepping>false</MaskInterruptsWhileStepping>
     <MemoryWindowPreferences />
-    <e />
-    <c>
-      <b>AllGlobals</b>
-      <a>false</a>
-    </c>
+    <c />
+    <e>
+      <a>AllGlobals</a>
+      <b>false</b>
+    </e>
     <Suggestions />
     <HardwareRegisters />
   </DebugPreferences>

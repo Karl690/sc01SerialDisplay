@@ -79,7 +79,7 @@ void ui_pct_screen_init(void)
 	lv_obj_set_pos(logbutton, 20, 5);
 	
 	
-	obj = ui_create_label(ui_pct_screen, "HYPERCLEAN MEGASONIC", &lv_font_montserrat_20);	
+	obj = ui_create_label(ui_pct_screen, "0", &lv_font_montserrat_20);	
 	lv_obj_set_pos(obj, 220, 15);
 	ui_pct_line_4 = obj;
 	//obj = ui_create_label(ui_pct_screen, SYSTEMVERSION, &mono_regualr_16);	
@@ -93,17 +93,18 @@ void ui_pct_screen_init(void)
 	
 	int x = 20, y = 60;
 	
-	obj = ui_create_button(ui_pct_screen, "<<", button_w, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_BACK);
-	lv_obj_set_pos(obj, button_large_width + gap * 3, 2); ui_pct_keyboard[KEYBOARD_BACK] = obj;
+	obj = ui_create_button(ui_pct_screen, LV_SYMBOL_REFRESH, button_w, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_COMM);
+	lv_obj_set_pos(obj, button_large_width + gap * 3, 2); ui_pct_keyboard[KEYBOARD_COMM] = obj;
 	
 	obj = ui_create_button(ui_pct_screen, "CLR", button_w, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_CLEAR);
 	lv_obj_set_pos(obj, SCREEN_WIDTH - button_w - 5, 2); ui_pct_keyboard[KEYBOARD_CLEAR] = obj;
 	 
-	obj = ui_create_button(ui_pct_screen, LV_SYMBOL_REFRESH, button_large_width, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_COMM);
-	lv_obj_set_pos(obj, x, y); x += button_large_width + gap; ui_pct_keyboard[KEYBOARD_COMM] = obj;
-	obj = ui_create_button(ui_pct_screen, "PROG", button_large_width, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_PROG); ui_pct_btn_prog = obj;
+	obj = ui_create_button(ui_pct_screen, "PROG", button_large_width, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_PROG);
 	ui_change_button_color(obj, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
-	lv_obj_set_pos(obj, x, y); x += button_large_width + gap * 3; ui_pct_keyboard[KEYBOARD_PROG] = obj;
+	lv_obj_set_pos(obj, x, y); x += button_large_width + gap; ui_pct_keyboard[KEYBOARD_PROG] = obj;
+	obj = ui_create_button(ui_pct_screen, "DIAG", button_large_width, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_DIAG); ui_pct_btn_prog = obj;
+	
+	lv_obj_set_pos(obj, x, y); x += button_large_width + gap * 3; ui_pct_keyboard[KEYBOARD_DIAG] = obj;
 	obj = ui_create_button(ui_pct_screen, "1", button_w, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_1);
 	lv_obj_set_pos(obj, x, y); x += button_w + gap; ui_pct_keyboard[KEYBOARD_1] = obj;
 	obj = ui_create_button(ui_pct_screen, "2", button_w, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_2);
@@ -116,8 +117,8 @@ void ui_pct_screen_init(void)
 	x = 20; y += button_h + 5;
 	obj = ui_create_button(ui_pct_screen, "STOP", button_large_width, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_STOP);
 	lv_obj_set_pos(obj, x, y); x += button_large_width + gap; ui_pct_keyboard[KEYBOARD_STOP] = obj;
-	obj = ui_create_button(ui_pct_screen, "Diag", button_large_width, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_DIAG);
-	lv_obj_set_pos(obj, x, y); x += button_large_width + gap * 3; ui_pct_keyboard[KEYBOARD_DIAG] = obj;
+	obj = ui_create_button(ui_pct_screen, "<<", button_large_width, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_BACK);
+	lv_obj_set_pos(obj, x, y); x += button_large_width + gap * 3; ui_pct_keyboard[KEYBOARD_BACK] = obj;
 	obj = ui_create_button(ui_pct_screen, "4", button_w, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_4);
 	lv_obj_set_pos(obj, x, y); x += button_w + gap; ui_pct_keyboard[KEYBOARD_4] = obj;
 	obj = ui_create_button(ui_pct_screen, "5", button_w, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_5);

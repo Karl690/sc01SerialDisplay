@@ -149,3 +149,4 @@ void communication_check_rx();
 void communication_tx_commandline(COMPORT* comport, char* commandline);
 
 void SendPing();
+void SendDisplayStatusCode(bool isEnable);

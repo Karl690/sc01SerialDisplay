@@ -11,6 +11,9 @@ bool ui_comm_is_xmit = false;
 bool ui_comm_is_rcv = false;
 bool ui_comm_is_hex = false;
 bool ui_comm_is_ack = false;
+bool ui_comm_is_ssd = false;
+
+lv_obj_t* ui_comm_btn_ssd;
 lv_obj_t* ui_comm_btn_xmit;
 lv_obj_t* ui_comm_btn_rcv;
 lv_obj_t* ui_comm_btn_hex;
@@ -32,6 +35,11 @@ void ui_comm_event_button_cb(lv_event_t* e)
 	uint8_t code = (uint8_t)(int)lv_event_get_user_data(e);
 	switch (code)
 	{
+	case UI_COMM_BTN_SSD:
+		ui_comm_is_ssd = !ui_comm_is_ssd;
+		ui_change_button_color(ui_comm_btn_ssd, ui_comm_is_ssd ? UI_BUTTON_ACTIVE_BG_COLOR : UI_BUTTON_DISABLE_BG_COLOR, ui_comm_is_ssd ? UI_BUTTON_ACTIVE_FG_COLOR : UI_BUTTON_DISABLE_FG_COLOR);
+		SendDisplayStatusCode(ui_comm_is_ssd);
+		break;
 	case UI_COMM_BTN_CLEAR:
 		ui_comm_clear_log();
 		break;
@@ -107,10 +115,14 @@ void ui_comm_screen_init(void)
 	int x = 10, y = 40 + gap;
 	int btn_width = 80;
 	int btn_height = 35;
+	obj = ui_create_button(ui_comm_screen, LV_SYMBOL_REFRESH, btn_width, btn_height, 2, font, ui_comm_event_button_cb, (void*)UI_COMM_BTN_OK);
+	lv_obj_set_pos(obj, x, 2);
 	obj = ui_create_button(ui_comm_screen, "CLEAR", btn_width, btn_height, 2, font, ui_comm_event_button_cb, (void*)UI_COMM_BTN_CLEAR);
 	lv_obj_set_pos(obj, SCREEN_WIDTH - btn_width - 5, 2);
-	obj = ui_create_button(ui_comm_screen, LV_SYMBOL_REFRESH, btn_width, btn_height, 2, font, ui_comm_event_button_cb, (void*)UI_COMM_BTN_OK);
-	lv_obj_set_pos(obj, x, y);
+	obj = ui_create_button(ui_comm_screen, "SSD", btn_width, btn_height, 2, font, ui_comm_event_button_cb, (void*)UI_COMM_BTN_SSD);
+	lv_obj_set_pos(obj, x, y);  ui_comm_btn_ssd = obj;
+	ui_change_button_color(obj, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
+	
 	y += btn_height + gap;
 	obj = ui_create_button(ui_comm_screen, "PING", btn_width, btn_height, 2, font, ui_comm_event_button_cb, (void*)UI_COMM_BTN_PING);
 	lv_obj_set_pos(obj, x, y);

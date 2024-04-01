@@ -409,8 +409,13 @@ void communication_tx_commandline(COMPORT* comport, char* commandline)
 
 void SendPing()
 {
-	MasterCommPort->pingSent = true;
 	communication_add_char_to_serial_buffer(&MasterCommPort->TxBuffer, 0x7);
 	MasterCommPort->pingSent = true;
 	ui_comm_add_event((const char*)"Send Ping 0x7", UI_COMM_COLOR_SEND, false);
+}
+
+void SendDisplayStatusCode(bool isEnable)
+{
+	communication_add_char_to_serial_buffer(&MasterCommPort->TxBuffer, isEnable? 0x5: 0x4);
+	ui_comm_add_event((const char*)isEnable ? "Serial Display enabled 0x5" : "Serial Display disabled 0x4", UI_COMM_COLOR_SEND, false);
 }
