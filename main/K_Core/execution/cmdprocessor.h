@@ -76,3 +76,4 @@ extern char cmd_CommandsInQueBuffer[SIZE_OF_COMMAND_QUEUE][MAX_COMMAND_LEN];
 void cmd_sequener();
 void parseLineCommandData(char* cmd);
 uint8_t convertCommandData(char*);
+void parseG6Command(char* cmd);

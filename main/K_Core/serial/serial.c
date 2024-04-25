@@ -7,8 +7,9 @@
 #include <sys/errno.h>
 #include <sys/unistd.h>
 #include <sys/select.h>
-
+#include "L_Core/bluetooth/ble.h"
 #include "K_Core/communication/communication.h"
+#include "L_Core/ui/ui-comm.h"
 int serial_uart_fd = -1;
 
 
@@ -57,6 +58,8 @@ bool serial_uart_write_byte(COMPORT* comport, char byte)
 	}
 	comport->TxIndicator = 3;
 	comport->NumberOfCharactersSent++;
+	ui_comm_tx_indicator = 3;
+	ui_comm_tx_chars ++;
 	return true;
 }
 
@@ -72,7 +75,14 @@ void* serial_uart1_read_task(void* param)
 		}
 		ComUart1.NumberOfCharactersReceived += len;
 		ComUart1.RxIndicator = 3;
+		ui_comm_rx_indicator = 3;
+		ui_comm_rx_chars += len;
 		communication_add_buffer_to_serial_buffer(&ComUart1.RxBuffer, buffer, len);
+		if (ble_run_mode == BLE_RUN_SERVER)
+		{
+			//if the device is running as Server , it sends the raw data to client.
+			//communication_add_buffer_to_ble_buffer(&bleServerDevice.TxBuffer, buffer, len);	
+		}
 	}
 	return NULL;
 }

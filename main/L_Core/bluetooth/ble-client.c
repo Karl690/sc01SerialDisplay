@@ -1,6 +1,7 @@
 #include "main.h"
 #include "ble.h"
 #include "../ui/ui-bluetooth.h"
+#include "L_Core/ui/ui-comm.h"
 struct gattc_profile_inst {
 	esp_gattc_cb_t gattc_cb;
 	uint16_t gattc_if;
@@ -69,6 +70,7 @@ static esp_gattc_db_elem_t *db = NULL;
 static QueueHandle_t cmd_reg_queue = NULL;
 QueueHandle_t spp_uart_queue = NULL;
 
+BleRemoteDevice* ble_client_paired_device = NULL;
 static esp_bt_uuid_t spp_client_service_uuid = {
     .len  = ESP_UUID_LEN_16,
     .uuid = {.uuid16 = SPP_SERVICE_UUID},
@@ -160,6 +162,9 @@ static void gattc_profile_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_
         ESP_LOGI(BLE_TAG, "ESP_GATTC_SEARCH_CMPL_EVT");
 	    dev = ble_client_get_device_by_conn_id(p_data->search_cmpl.conn_id);	
         if (dev->get_server){
+	        is_client_connect = true;
+	        ble_client_paired_device = dev;
+	        ble_run_mode = BLE_RUN_CLIENT;
             uint16_t count = 0;
             esp_gatt_status_t status = esp_ble_gattc_get_attr_count( gattc_if,
                                                                      p_data->search_cmpl.conn_id,
@@ -219,9 +224,11 @@ static void gattc_profile_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_
         }
 	    
         esp_log_buffer_hex(BLE_TAG, p_data->notify.value, p_data->notify.value_len);
-	    dev = ble_client_get_device_by_address(p_data->notify.remote_bda);
-	    ble_client_read_data(dev, p_data->notify.value, p_data->notify.value_len);
-        break;
+	    if (p_data->notify.value_len)
+	    {
+		    ble_client_read_data(p_data->notify.value, p_data->notify.value_len);
+	    }
+	    break;
     case ESP_GATTC_WRITE_DESCR_EVT:       
         break;
     case ESP_GATTC_SRVC_CHG_EVT: {
@@ -243,6 +250,9 @@ static void gattc_profile_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_
 	    if (!dev) break;
         dev->is_connected = 0;
         dev->get_server = 0;
+	    is_client_connect = false;
+	    ble_run_mode = BLE_RUN_NONE;
+	    ble_client_paired_device = NULL;
         ESP_LOGI(BLE_TAG, "ESP_GATTC_DISCONNECT_EVT, reason = %d", p_data->disconnect.reason);
         ui_ble_set_device_status(dev);
         break;
@@ -296,24 +306,30 @@ void ble_client_disconnect_device(BleRemoteDevice* dev)
 	esp_ble_gattc_close(dev->gattc_if, dev->conn_id);
 }
 
-void ble_client_read_data(BleRemoteDevice* dev, uint8_t* data, uint16_t len)
+void ble_client_read_data(uint8_t* data, uint16_t len)
 {
-	if (!dev->is_connected) return;
-	strncpy((char*)dev->last_received_buffer, (char*)data, len>=50?50: len);
-    memcpy(dev->receive_buffer, data, len);
-	dev->total_received += len;
-	ui_ble_set_received_data(dev);
+	if (!ble_client_paired_device) return;
+	communication_add_buffer_to_ble_buffer(&bleServerDevice.RxBuffer, data, len);
+	strncpy((char*)ble_client_paired_device->last_received_buffer, (char*)data, len >= 50 ? 50 : len);
+	memcpy(ble_client_paired_device->receive_buffer, data, len);
+	ble_client_paired_device->total_received += len;
+	ui_comm_rx_indicator = 3;
+	ui_comm_rx_chars = ble_client_paired_device->total_received;
+	ui_ble_set_received_data(ble_client_paired_device);
 }
 
-void ble_client_write_data(BleRemoteDevice* dev, uint8_t* data, uint16_t len)
+void ble_client_write_data(uint8_t* data, uint16_t len)
 {
-	if (!dev->is_connected) return;
-	strncpy((char*)dev->last_send_buffer  , (char*)data, len>=50?50: len);
-    memcpy(dev->send_buffer, data, len);
-	dev->total_sent += len;
-	esp_ble_gattc_write_char( dev->gattc_if,
-		dev->conn_id,
-		dev->write_handle,
+	if (!ble_client_paired_device) return;
+	strncpy((char*)ble_client_paired_device->last_send_buffer, (char*)data, len >= 50 ? 50 : len);
+	memcpy(ble_client_paired_device->send_buffer, data, len);
+	
+	ble_client_paired_device->total_sent += len;
+	ui_comm_tx_indicator = 3;
+	ui_comm_tx_chars = ble_client_paired_device->total_sent;
+	esp_ble_gattc_write_char( ble_client_paired_device->gattc_if,
+		ble_client_paired_device->conn_id,
+		ble_client_paired_device->write_handle,
 		len,
 		data,
 		ESP_GATT_WRITE_TYPE_RSP,

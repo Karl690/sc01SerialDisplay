@@ -3,6 +3,7 @@
 #include "main.h"
 #include "L_Core/ui/ui-comm.h"
 #include "K_Core/serial/serial.h"
+#include "L_Core/bluetooth/ble.h"
 //#include "K_core/communication/communication.h"
 #include "RevisionHistory.h"
 
@@ -24,7 +25,6 @@ void ui_pct_event_button_cb(lv_event_t* e)
 	switch (code)
 	{
 	case KEYBOARD_0: strcpy(ui_pct_temp,KEYBOARD_0_STRING);		break;
-
 	case KEYBOARD_1: strcpy(ui_pct_temp, KEYBOARD_1_STRING); break;
 	case KEYBOARD_2: strcpy(ui_pct_temp, KEYBOARD_2_STRING); break;
 	case KEYBOARD_3: strcpy(ui_pct_temp, KEYBOARD_3_STRING); break;
@@ -43,11 +43,21 @@ void ui_pct_event_button_cb(lv_event_t* e)
 	case KEYBOARD_PROG:  strcpy(ui_pct_temp, KEYBOARD_PROG_STRING); break;
 	case KEYBOARD_DIAG:  strcpy(ui_pct_temp, KEYBOARD_DIAG_STRING); break;
 	case KEYBOARD_ENTER: strcpy(ui_pct_temp, KEYBOARD_ENTER_STRING); break;
-	case KEYBOARD_COMM:	ui_transform_screen(SCREEN_COMM);		return;
-	case KEYBOARD_HOME:	ui_transform_screen(SCREEN_HOME);		return;
+	case KEYBOARD_COMM:	strcpy(ui_pct_temp, KEYBOARD_COMM_STRING); ui_transform_screen(SCREEN_COMM); return;
+	case KEYBOARD_HOME:	strcpy(ui_pct_temp, KEYBOARD_HOME_STRING); ui_transform_screen(SCREEN_HOME); return;
 	case KEYBOARD_BACK: strcpy(ui_pct_temp, KEYBOARD_BACK_STRING); break;
 	}
-	communication_tx_commandline(MasterCommPort, ui_pct_temp);
+	uint8_t len = strlen(ui_pct_temp);
+	if (ble_run_mode == BLE_RUN_CLIENT) //client => server
+		ble_client_write_data((uint8_t*)ui_pct_temp, len);
+	else {
+		//server => client
+		if (ble_run_mode == BLE_RUN_SERVER)
+		{
+			ble_server_send_data((uint8_t*)ui_pct_temp, len);	
+		}
+		communication_tx_commandline(MasterCommPort, ui_pct_temp);
+	}
 }
 
 void ui_pct_update_lines_timer(lv_timer_t * timer)
@@ -80,7 +90,7 @@ void ui_pct_screen_init(void)
 	
 	
 	obj = ui_create_label(ui_pct_screen, "0", &lv_font_montserrat_20);	
-	lv_obj_set_pos(obj, 220, 15);
+	lv_obj_set_pos(obj, 230, 15);
 	ui_pct_line_4 = obj;
 	//obj = ui_create_label(ui_pct_screen, SYSTEMVERSION, &mono_regualr_16);	
 	//lv_obj_set_pos(obj, 100, 40);
@@ -93,17 +103,16 @@ void ui_pct_screen_init(void)
 	
 	int x = 20, y = 60;
 	
-	obj = ui_create_button(ui_pct_screen, LV_SYMBOL_REFRESH, button_w, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_COMM);
-	lv_obj_set_pos(obj, button_large_width + gap * 3, 2); ui_pct_keyboard[KEYBOARD_COMM] = obj;
+	obj = ui_create_button(ui_pct_screen, LV_SYMBOL_REFRESH, button_large_width, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_COMM);
+	lv_obj_set_pos(obj, x += button_large_width + gap, 2); ui_pct_keyboard[KEYBOARD_COMM] = obj;
 	
 	obj = ui_create_button(ui_pct_screen, "CLR", button_w, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_CLEAR);
 	lv_obj_set_pos(obj, SCREEN_WIDTH - button_w - 5, 2); ui_pct_keyboard[KEYBOARD_CLEAR] = obj;
-	 
+	x = 20; 
 	obj = ui_create_button(ui_pct_screen, "PROG", button_large_width, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_PROG);
 	ui_change_button_color(obj, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
 	lv_obj_set_pos(obj, x, y); x += button_large_width + gap; ui_pct_keyboard[KEYBOARD_PROG] = obj;
 	obj = ui_create_button(ui_pct_screen, "DIAG", button_large_width, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_DIAG); ui_pct_btn_prog = obj;
-	
 	lv_obj_set_pos(obj, x, y); x += button_large_width + gap * 3; ui_pct_keyboard[KEYBOARD_DIAG] = obj;
 	obj = ui_create_button(ui_pct_screen, "1", button_w, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_1);
 	lv_obj_set_pos(obj, x, y); x += button_w + gap; ui_pct_keyboard[KEYBOARD_1] = obj;
@@ -131,7 +140,7 @@ void ui_pct_screen_init(void)
 	x = 20; y += button_h + 5;
 	obj = ui_create_button(ui_pct_screen, "START", button_large_width, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_START);
 	lv_obj_set_pos(obj, x, y); x += button_large_width + gap; ui_pct_keyboard[KEYBOARD_START] = obj;
-	obj = ui_create_button(ui_pct_screen, "Enter", button_large_width, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_ENTER);
+	obj = ui_create_button(ui_pct_screen, "ENTER", button_large_width, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_ENTER);
 	lv_obj_set_pos(obj, x, y); x += button_large_width + gap * 3; ui_pct_keyboard[KEYBOARD_ENTER] = obj;
 	obj = ui_create_button(ui_pct_screen, "7", button_w, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_7);
 	lv_obj_set_pos(obj, x, y); x += button_w + gap; ui_pct_keyboard[KEYBOARD_7] = obj;

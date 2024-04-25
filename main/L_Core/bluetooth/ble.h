@@ -72,6 +72,13 @@ typedef enum
 	BLE_SERVER_HEADSET   = 3,
 }ble_server_status_t;
 
+typedef enum
+{
+	BLE_RUN_NONE,
+	//not server and client
+	BLE_RUN_SERVER, // server mode
+	BLE_RUN_CLIENT, //client mode
+}BLE_RUN_MODE;
 
 typedef struct _tagBLEDevice {
 	uint8_t id;
@@ -99,11 +106,14 @@ typedef struct _tagBLEDevice {
 	uint8_t send_buffer[256];
 }BleRemoteDevice;
 
-
+extern uint8_t ble_rx_buffer[RX_BUF_SIZE];
+extern uint8_t ble_tx_buffer[TX_BUF_SIZE];
+extern BLE_RUN_MODE ble_run_mode;
 extern BleDevice bleServerDevice;
 extern ble_server_status_t ble_server_status;
 extern uint8_t ble_client_scaned_device_num;
 extern BleRemoteDevice ble_client_remote_device[BLE_CLIENT_MAX_CONNECT_NUM];
+extern BleRemoteDevice* ble_client_paired_device;
 extern esp_ble_adv_params_t spp_adv_params;
 
 extern uint8_t ble_server_send_blink_count;
@@ -147,5 +157,5 @@ void ble_client_disconnect_device(BleRemoteDevice*);
 BleRemoteDevice* ble_get_device(uint8_t id);
 BleRemoteDevice* ble_client_get_device_by_address(uint8_t* address);
 BleRemoteDevice* ble_client_get_device_by_conn_id(uint16_t);
-void ble_client_write_data(BleRemoteDevice* dev, uint8_t* data, uint16_t len);
-void ble_client_read_data(BleRemoteDevice* dev, uint8_t* data, uint16_t len);
+void ble_client_write_data(uint8_t* data, uint16_t len);
+void ble_client_read_data(uint8_t* data, uint16_t len);

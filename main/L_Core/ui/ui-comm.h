@@ -20,6 +20,14 @@ enum
 #define UI_COMM_COLOR_RECEIVE	0xFFFFFF
 extern lv_obj_t* ui_comm_screen;
 
+extern uint8_t ui_comm_tx_indicator;
+extern uint8_t ui_comm_rx_indicator;
+
+extern uint32_t ui_comm_tx_chars;
+extern uint32_t ui_comm_rx_chars;
+extern uint32_t ui_comm_tx_acks;
+extern uint32_t ui_comm_rx_acks;
+
 extern bool ui_comm_is_ack;
 extern bool ui_comm_is_hex;
 void ui_comm_screen_init(void);

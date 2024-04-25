@@ -373,6 +373,7 @@ static void gatts_profile_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_
 	case ESP_GATTS_CONNECT_EVT:
 		spp_server_conn_id = p_data->connect.conn_id;
 		spp_gatts_if = gatts_if;
+		ble_run_mode = BLE_RUN_SERVER;
 		is_server_connected = 1;
 		ble_server_total_received = 0;
 		ble_server_total_sent = 0;
@@ -381,6 +382,7 @@ static void gatts_profile_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_
 		ble_server_pairing_countdown = 10; // if the client does not send data util this value become 0, close the pairing. 
 		break;
 	case ESP_GATTS_DISCONNECT_EVT:
+		ble_run_mode = BLE_RUN_NONE;
 		is_server_connected = 0;
 		enable_data_ntf = false;
 		esp_ble_gap_start_advertising(&spp_adv_params);		
@@ -453,7 +455,7 @@ uint8_t ble_server_enable()
 	systemconfig.bluetooth.server_enabled = 1;
 	ble_server_total_received = 0;
 	// initialize the buffer(Rx, Tx, Urgent Rx)
-	communication_buffers_ble_init(BLE_PORT_ID, &bleServerDevice);
+	communication_buffers_ble_init(BLE_PORT_ID, &bleServerDevice, ble_rx_buffer, ble_tx_buffer);
 	return 1;
 }
 

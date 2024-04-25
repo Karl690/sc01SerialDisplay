@@ -2,8 +2,10 @@
 #include "ble.h"
 #include "../ui/ui-bluetooth.h"
 
-
+BLE_RUN_MODE ble_run_mode = BLE_RUN_NONE;
 BleRemoteDevice ble_client_remote_device[BLE_CLIENT_MAX_CONNECT_NUM];
+uint8_t ble_rx_buffer[RX_BUF_SIZE];
+uint8_t ble_tx_buffer[TX_BUF_SIZE];
 uint8_t ble_client_scaned_device_num = 0;
 esp_ble_adv_params_t spp_adv_params = {
 	.adv_int_min = 0x20,
@@ -125,8 +127,7 @@ uint8_t ble_add_scan_device(esp_ble_gap_cb_param_t* scan_result) {
 	ble_client_remote_device[ble_client_scaned_device_num].is_scaned = 1;
 	ble_client_remote_device[ble_client_scaned_device_num].total_sent = 0;
 	ble_client_remote_device[ble_client_scaned_device_num].total_received = 0;
-	ui_ble_add_device(&ble_client_remote_device[ble_client_scaned_device_num]);
-	ble_client_write_data(&ble_client_remote_device[ble_client_scaned_device_num], (uint8_t*)"B10\n", 4);
+	ui_ble_add_device(&ble_client_remote_device[ble_client_scaned_device_num]);	
 	ble_client_scaned_device_num++;
 	return 1;
 }

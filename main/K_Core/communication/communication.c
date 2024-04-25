@@ -45,25 +45,29 @@ void communication_buffers_serial_init(uint8_t UartIndex, COMPORT* ComPort, uint
 	memset(ComPort->RxUrgentBuffer.buffer, 0, RX_BUF_SIZE);
 }
 
-void communication_buffers_ble_init(uint8_t id, BleDevice* device)
+void communication_buffers_ble_init(uint8_t id, BleDevice* device, uint8_t* RxBuffer, uint8_t* TxBuffer)
 {
 	//Initialize Secs serial's buffers
 	device->ble_id = id;
+	device->RxBuffer.buffer =		RxBuffer;
+	device->RxBuffer.Buffer_Size =		RX_BUF_SIZE;
 	device->RxBuffer.Head          = 0; //start of que
 	device->RxBuffer.Tail          = 0; //end of the que
 	device->RxBuffer.commandPtr		= device->RxBuffer.command;
-	memset(device->RxBuffer.buffer, 0, RX_BUF_SIZE);
+	memset(device->RxBuffer.buffer, 0, device->RxBuffer.Buffer_Size);
 	device->AcksWaiting            = 0;
 	
+	device->TxBuffer.buffer =		TxBuffer;
+	device->TxBuffer.Buffer_Size =		TX_BUF_SIZE;
 	device->TxBuffer.Head		    = 0; // index of where to put the next char
 	device->TxBuffer.Tail	        = 0; // index of where to pull the next char
 	device->TxBuffer.commandPtr		= device->TxBuffer.command;
-	memset(device->TxBuffer.buffer, 0, TX_BUF_SIZE);	
-	
-	device->RxUrgentBuffer.Head        = 0; //start of que
-	device->RxUrgentBuffer.Tail        = 0; //end of the que	
-	device->RxUrgentBuffer.commandPtr		= device->RxUrgentBuffer.command;
-	memset(device->RxUrgentBuffer.buffer, 0, RX_BUF_SIZE);
+	memset(device->TxBuffer.buffer, 0, device->TxBuffer.Buffer_Size);	
+//	
+//	device->RxUrgentBuffer.Head        = 0; //start of que
+//	device->RxUrgentBuffer.Tail        = 0; //end of the que	
+//	device->RxUrgentBuffer.commandPtr		= device->RxUrgentBuffer.command;
+//	memset(device->RxUrgentBuffer.buffer, 0, RX_BUF_SIZE);
 	device->UrgentFlag					= 0;
 	device->AcksWaiting				= 0;
 }
@@ -145,6 +149,7 @@ void communication_process_rx_serial(COMPORT* WorkingComPort)
 				parser_add_line_to_commandbuffer(WorkingComPort);
 				WorkingComPort->UrgentFlag = 0; 
 				WorkingComPort->CommandLineIdx = 0;
+				memset(WorkingComPort->CommandLineBuffer, 0, 256);
 			}
 		}
 		//if you get here, you must process special characters
@@ -175,6 +180,7 @@ void communication_process_rx_serial(COMPORT* WorkingComPort)
 			case PING_REPLY:
 				WorkingComPort->TxAcknowledgeCounter--; //keep track of how far behind we are
 				if (WorkingComPort->TxAcknowledgeCounter < 0) WorkingComPort->TxAcknowledgeCounter = 0; //in case of underrun from reset condition
+				ui_comm_tx_acks = WorkingComPort->TxAcknowledgeCounter;
 				if (WorkingComPort->pingSent)
 				{
 					ui_comm_add_event((const char*)"Ping reply 0x06", UI_COMM_COLOR_RECEIVE, false);	
@@ -190,6 +196,8 @@ void communication_process_rx_serial(COMPORT* WorkingComPort)
 				communication_add_char_to_serial_buffer(&WorkingComPort->TxBuffer, (uint8_t) 0x6);
 				WorkingComPort->TxAcknowledgeCounter = 0;
 				WorkingComPort->RxAcknowledgeCounter = 0;
+				ui_comm_rx_acks = 0;
+				ui_comm_tx_acks = 0;
 				ui_comm_add_log((const char*)CONNECTIONSTRING, UI_COMM_COLOR_RECEIVE);
 				break;
 
@@ -208,7 +216,7 @@ void communication_process_rx_serial(COMPORT* WorkingComPort)
 				WorkingComPort->CommandLineBuffer[WorkingComPort->CommandLineIdx] = WorkRxChar;
 				parser_add_line_to_commandbuffer(WorkingComPort);
 				WorkingComPort->UrgentFlag = 0; 
-				WorkingComPort->CommandLineIdx = 0;
+				WorkingComPort->CommandLineIdx = 0;				
 				return;
 			case  13: 		return;//return char, just ignore
 				
@@ -238,18 +246,32 @@ void communication_process_rx_serial(COMPORT* WorkingComPort)
 
 void communication_process_rx_ble(BleDevice* device)
 {
-	BleBuffer* WorkBuf = device->UrgentFlag ? &device->RxUrgentBuffer : &device->RxBuffer; //point to the correct buffer
-	int index = 0;
-	uint8_t WorkRxChar;
-	for (uint8_t i = 0; i < PROCESS_MAX_CHARS_TO_READ_ON_ONE_SLICE; i++)
-	{	
-		if (WorkBuf->Head == WorkBuf->Tail) break;
+	if (device->RxBuffer.Head == device->RxBuffer.Tail)return;//nothing to 
+	BleBuffer* SourceBuff = &device->RxBuffer;
+	uint8_t i = 0;
+	char WorkRxChar;
+	uint32_t idx = 0; 
+	for (i = 0; i < PROCESS_MAX_CHARS_TO_READ_ON_ONE_SLICE; i++)
+	{
+		if (SourceBuff->Head == SourceBuff->Tail) break;
 		//must be != because it is circular que.... can not simpley be less than
-		WorkRxChar = WorkBuf->buffer[WorkBuf->Tail];
-		if (WorkRxChar  > 0x19)
+		WorkRxChar = SourceBuff->buffer[SourceBuff->Tail];
+		SourceBuff->Tail++; //point to the next character
+		SourceBuff->Tail &= (SourceBuff->Buffer_Size - 1); //circular que with even hex size....
+
+		if (WorkRxChar  > 0x19 && WorkRxChar <= 0x7F)
 		{
 			//normal ascii character processing, below 20 hex are special control characters
-			communication_add_char_to_ble_buffer(WorkBuf, WorkRxChar);
+			//communication_add_char_to_serial_buffer(TargetBuff, WorkRxChar);
+			device->CommandLineBuffer[device->CommandLineIdx] = WorkRxChar;
+			device->CommandLineIdx++;
+			if (idx >= 254)
+			{
+				device->CommandLineBuffer[254] = CMD_END_CHAR;
+				parser_add_line_to_blebuffer(device);
+				device->UrgentFlag = 0; 
+				device->CommandLineIdx = 0;
+			}
 		}
 		//if you get here, you must process special characters
 		else
@@ -274,10 +296,27 @@ void communication_process_rx_ble(BleDevice* device)
 			case SEND_STATUS_CHAR:    break; //if (rawChar==5)
 				//M_Code_M775();break;// send live status on health of motion controller
 
-			case ASCII_ACK: //if (rawChar==6)
+			//case ASCII_ACK: //if (rawChar==6)
+				//ShowNextDisplay(); break;
+			case PING_REPLY:
+				//device->TxAcknowledgeCounter--; //keep track of how far behind we are
+				//if (device->TxAcknowledgeCounter < 0) WorkingComPort->TxAcknowledgeCounter = 0; //in case of underrun from reset condition
+//				if (device->pingSent)
+//				{
+//					ui_comm_add_event((const char*)"Ping reply 0x06", UI_COMM_COLOR_RECEIVE, false);	
+//					device->pingSent = false;
+//				}
+//				else if (ui_comm_is_ack)
+//				{
+//					ui_comm_add_event((const char*)&WorkRxChar, UI_COMM_COLOR_RECEIVE, ui_comm_is_hex);	
+//				}
 				break;
+
 			case PING_CHAR:     //if (rawChar==7)
-				communication_add_string_to_ble_buffer(&device->TxBuffer, (char*)CONNECTIONSTRING);
+//				communication_add_char_to_serial_buffer(&device->TxBuffer, (uint8_t) 0x6);
+//				device->TxAcknowledgeCounter = 0;
+//				device->RxAcknowledgeCounter = 0;
+				ui_comm_add_log((const char*)CONNECTIONSTRING, UI_COMM_COLOR_RECEIVE);
 				break;
 
 			case ABORT_CHAR:  
@@ -292,9 +331,11 @@ void communication_process_rx_ble(BleDevice* device)
 				break;
 
 			case CMD_END_CHAR:  //if (rawChar==10) 0xA or 0xD  can trigger the end of line			
-				//gcodeCmdsReceived++;
-				communication_add_char_to_ble_buffer(WorkBuf, CMD_END_CHAR);
-				device->UrgentFlag = 0; return;
+				device->CommandLineBuffer[device->CommandLineIdx] = WorkRxChar;
+				parser_add_line_to_blebuffer(device);
+				device->UrgentFlag = 0; 
+				device->CommandLineIdx = 0;
+				return;
 			case  13: 		return;//return char, just ignore
 				
 			case JOG_Z_TABLE_UP:    
@@ -318,7 +359,6 @@ void communication_process_rx_ble(BleDevice* device)
 				break;				//if (rawChar==17)
 			}
 		}
-		index++; //increment to next INCOMING character position
 	}	
 }
 
@@ -360,6 +400,7 @@ void communication_process_tx_serial(COMPORT* device)
 		serial_uart_write_byte(device, ASCII_ACK);
 		device->RxAcknowledgeCounter--;
 		if (device->RxAcknowledgeCounter < 0) device->RxAcknowledgeCounter = 0;
+		ui_comm_rx_acks = device->RxAcknowledgeCounter;
 	}
 	if (device->TxBuffer.Head != device->TxBuffer.Tail)
 	{
@@ -402,7 +443,9 @@ void communication_tx_commandline(COMPORT* comport, char* commandline)
 	int len = strlen(commandline);
 	communication_add_buffer_to_serial_buffer(&comport->TxBuffer, (uint8_t*)commandline, len); 
 	comport->TxAcknowledgeCounter++;
+	ui_comm_tx_acks = comport->TxAcknowledgeCounter;
 	comport->NumberOfCharactersSent += len;
+	ui_comm_tx_chars = comport->NumberOfCharactersSent;
 	ui_comm_add_log(commandline, UI_COMM_COLOR_SEND);
 	
 }

@@ -109,7 +109,7 @@ typedef struct {
 
 
 typedef struct {
-	uint8_t  	buffer[RX_BUF_SIZE]; //receive buffer pointer
+	uint8_t*  	buffer; //receive buffer pointer
 	uint16_t 	Head; // index of where to store the next char
 	uint16_t 	Tail; // index of where to pull the next char
 	uint32_t    Buffer_Size;
@@ -126,13 +126,15 @@ typedef struct {
 	BleBuffer       TxBuffer; //outgoing characters in que
 	uint32_t      UrgentFlag; //set when 911 character is received, signifying the beginning of a priority gcode line
 	uint32_t     AcksWaiting; //acknowledge waiting to implement Handshake	
+	char			CommandLineBuffer[256];
+	uint8_t			CommandLineIdx;
 } BleDevice;
 
 extern ComBuffer RawRxComBuffer;
 extern ComBuffer RawRxUrgentComBuffer;
 extern COMPORT* MasterCommPort;
 void communication_buffers_serial_init(uint8_t UartIndex, COMPORT* ComPort, uint8_t* RxBuffer, uint8_t* RxUgrentBuffer, uint8_t* TxBuffer);
-void communication_buffers_ble_init(uint8_t id, BleDevice* device);
+void communication_buffers_ble_init(uint8_t id, BleDevice* device, uint8_t* RxBuffer, uint8_t* TxBuffer);
 void communication_process_rx_serial_characters(COMPORT* );
 void communication_process_rx_ble_characters(BleDevice* device, uint8_t* buf, uint16_t len);
 
@@ -141,6 +143,7 @@ void communication_add_buffer_to_serial_buffer(ComBuffer *targetBuffer, uint8_t*
 void communication_add_string_to_serial_buffer(ComBuffer *targetBuffer, char* SourceString);
 void communication_add_char_to_serial_buffer(ComBuffer *targetBuffer, uint8_t RawChar);
 
+void communication_add_char_to_ble_buffer(BleBuffer *targetBuffer, uint8_t RawChar);
 void communication_add_buffer_to_ble_buffer(BleBuffer *targetBuffer, uint8_t* buf, uint16_t len);
 void communication_add_string_to_ble_buffer(BleBuffer *targetBuffer, char* SourceString);
 void communication_check_tx();

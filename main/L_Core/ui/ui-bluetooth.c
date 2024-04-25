@@ -109,8 +109,7 @@ void ui_ble_send_event_cb(lv_event_t* e)
 	char* text = (char*)lv_textarea_get_text(textobj);
 	uint8_t len = strlen(text);
 	if (!len) return;
-	if (!selected_device) return;
-	ble_client_write_data(selected_device, (uint8_t*)text, len);
+	ble_client_write_data((uint8_t*)text, len);
 }
 void ui_ble_switch_event_cb(lv_event_t* e)
 {
@@ -164,15 +163,15 @@ void ui_ble_screen_init()
 	lv_label_set_text(title_label, "BLUETOOTH");
 	lv_obj_set_style_text_font(title_label, &lv_font_montserrat_16, LV_PART_MAIN | LV_STATE_DEFAULT);	
 	lv_obj_align(title_label, LV_ALIGN_CENTER, 0, 0);
-	
+	y = 42;
 	obj = ui_create_button(ui_ble_screen, "SERVER", SCREEN_WIDTH / 2 - 1, 30, 3, &lv_font_montserrat_14, ui_ble_switch_event_cb, (void*)0);	
-	lv_obj_set_pos(obj, 0, 31);
+	lv_obj_set_pos(obj, 0, y);
 	ui_ble_server_button = obj;
 	obj = ui_create_button(ui_ble_screen, "CLIENT", SCREEN_WIDTH / 2 - 1, 30, 3, &lv_font_montserrat_14, ui_ble_switch_event_cb, (void*)1);	
-	lv_obj_set_pos(obj, SCREEN_WIDTH/2, 31);
+	lv_obj_set_pos(obj, SCREEN_WIDTH/2, y);
 	ui_ble_client_button = obj;
 	// panel
-	x = 5; y = 65;
+	x = 5; y +=30;
 	obj = lv_obj_create(ui_ble_screen);
 	lv_obj_set_size(obj, SCREEN_WIDTH-2, SCREEN_HEIGHT-65);
 	lv_obj_set_pos(obj, 1, y); 

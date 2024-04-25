@@ -4,7 +4,7 @@
 #include "K_Core/serial/serial.h"
 #include "K_Core/communication/communication.h"
 #include "RevisionHistory.h"
-
+#include "L_Core/bluetooth/ble.h"
 
 lv_obj_t* ui_comm_screen;
 bool ui_comm_is_xmit = false;
@@ -30,6 +30,13 @@ lv_obj_t* ui_comm_btn_ack;
 uint16_t ui_comm_log_head = 0;
 uint16_t ui_comm_log_tail = 0;
 
+uint8_t ui_comm_tx_indicator = 0;
+uint8_t ui_comm_rx_indicator = 0;
+
+uint32_t ui_comm_tx_chars = 0;
+uint32_t ui_comm_rx_chars = 0;
+uint32_t ui_comm_tx_acks = 0;
+uint32_t ui_comm_rx_acks = 0;
 void ui_comm_event_button_cb(lv_event_t* e)
 {
 	uint8_t code = (uint8_t)(int)lv_event_get_user_data(e);
@@ -69,36 +76,38 @@ void ui_comm_event_button_cb(lv_event_t* e)
 	}
 }
 
+
 void ui_comm_update_indicator_timer(lv_timer_t * timer)
 {
 	if (!lv_obj_is_visible(ui_comm_screen)) return;
 	if (!MasterCommPort) return;
-	if (MasterCommPort->RxIndicator > 0)
+
+	if (ui_comm_rx_indicator> 0)
 	{
-		MasterCommPort->RxIndicator--;
+		ui_comm_rx_indicator--;
 		lv_obj_set_style_text_color(ui_comm_lbl_rcv_indicator, lv_color_hex(UI_BUTTON_ACTIVE_FG_COLOR), LV_PART_MAIN); 
 	}
 	else
 	{
 		lv_obj_set_style_text_color(ui_comm_lbl_rcv_indicator, lv_color_hex(UI_BUTTON_DISABLE_BG_COLOR), LV_PART_MAIN); 
 	}
-	if (MasterCommPort->TxIndicator > 0)
+	if (ui_comm_tx_indicator > 0)
 	{
-		MasterCommPort->TxIndicator--;
+		ui_comm_rx_indicator--;
 		lv_obj_set_style_text_color(ui_comm_lbl_xmit_indicator, lv_color_hex(UI_BUTTON_ACTIVE_FG_COLOR), LV_PART_MAIN); 
 	}
 	else
 	{
 		lv_obj_set_style_text_color(ui_comm_lbl_xmit_indicator, lv_color_hex(UI_BUTTON_DISABLE_BG_COLOR), LV_PART_MAIN); 
 	}
-	sprintf(ui_temp_string, "%d", (int)MasterCommPort->NumberOfCharactersReceived);
+	sprintf(ui_temp_string, "%d", (int)ui_comm_rx_chars);
 	lv_label_set_text(ui_comm_lbl_rcv_count, ui_temp_string);
-	sprintf(ui_temp_string, "%d", (int)MasterCommPort->NumberOfCharactersSent);
+	sprintf(ui_temp_string, "%d", (int)ui_comm_tx_chars);
 	lv_label_set_text(ui_comm_lbl_xmit_count, ui_temp_string);
 	
-	sprintf(ui_temp_string, "%d", (int)MasterCommPort->TxAcknowledgeCounter);
+	sprintf(ui_temp_string, "%d", (int)ui_comm_tx_acks);
 	lv_label_set_text(ui_comm_lbl_tx_acks, ui_temp_string);
-	sprintf(ui_temp_string, "%d", (int)MasterCommPort->RxAcknowledgeCounter);
+	sprintf(ui_temp_string, "%d", (int)ui_comm_rx_acks);
 	lv_label_set_text(ui_comm_lbl_rx_acks, ui_temp_string);
 }
 
