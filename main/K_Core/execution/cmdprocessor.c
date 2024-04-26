@@ -17,7 +17,7 @@ void cmd_sequener()
     if(!cmd_CommandsInQue) return;						//no commands to proces, so return
     char* cmd = &cmd_CommandsInQueBuffer[cmd_CurrentPointer][0];
 	int len = strlen(cmd);
-	char* g6_cmd = strstr(cmd, "G6");
+	char* g6_cmd = strstr(cmd, "G6"); // it only come from BLE Client
 	if (ble_run_mode == BLE_RUN_SERVER)
 	{
 		//if the device is running as Server , it sends the raw data to client.
@@ -25,12 +25,12 @@ void cmd_sequener()
 		//communication_add_char_to_ble_buffer(&bleServerDevice.TxBuffer, '\n');
 		if (!g6_cmd) ble_server_send_data((uint8_t*)cmd, len); //send data if the command is not from client
 	}
-	if (cmd[len - 1] == '\n') cmd[len - 1] = '\0'; //remove  '\n'
 	if (g6_cmd)
 	{
 		parseG6Command(g6_cmd); // this is only command from client
 	}
 	else {
+		if (cmd[len - 1] == '\n') cmd[len - 1] = '\0'; //remove  '\n'
 		parseLineCommandData(cmd);
 	}
 	ui_comm_add_log(cmd, UI_COMM_COLOR_RECEIVE);

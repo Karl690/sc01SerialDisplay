@@ -11,7 +11,29 @@
     </CatchpointConfiguration>
     <VisualWatchPreferences />
     <MaskInterruptsWhileStepping>false</MaskInterruptsWhileStepping>
-    <MemoryWindowPreferences />
+    <MemoryWindowPreferences>
+      <MemoryWindowPreferences>
+        <ExpressionHistory>
+          <string>0x3fca698c </string>
+          <string>0x3fcd341c </string>
+        </ExpressionHistory>
+        <SymbolicMode>true</SymbolicMode>
+        <TakeAddressMode>false</TakeAddressMode>
+        <Format>
+          <DataWidth>OneByte</DataWidth>
+          <DataFormat>Hexadecimal</DataFormat>
+          <TextFormat>ANSI</TextFormat>
+        </Format>
+        <LiveMemorySettings>
+          <Enabled>false</Enabled>
+          <BreakOnChanges>false</BreakOnChanges>
+          <AutoRefresh>false</AutoRefresh>
+          <RefreshTimeout>0</RefreshTimeout>
+        </LiveMemorySettings>
+        <ShowStatusBar>true</ShowStatusBar>
+        <DisplaySymbols>false</DisplaySymbols>
+      </MemoryWindowPreferences>
+    </MemoryWindowPreferences>
     <c />
     <e>
       <a>AllGlobals</a>
