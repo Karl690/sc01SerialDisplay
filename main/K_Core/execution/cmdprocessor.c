@@ -1,6 +1,7 @@
 
 #include "cmdprocessor.h"
 #include "bcode.h"
+#include "L_Core/bluetooth/ble.h"
 #include "L_Core/ui/ui.h"
 #include "L_Core/ui/ui-comm.h"
 #include "L_Core/ui/ui-pct.h"
@@ -49,7 +50,7 @@ void parseLineCommandData(char* cmd)
 	char command = ' '; 
 	for (int i = index - 1; i >= 0; i--)
 	{
-		if (cmd[i] == 'L' || cmd[i] == 'l' || cmd[i] == 'B' || cmd[i] == 'b' || cmd[i] == 'G')
+		if (cmd[i] == 'L' || cmd[i] == 'l' || cmd[i] == 'B' || cmd[i] == 'b' || cmd[i] == 'S')
 		{
 			command = cmd[i];
 			firstPos = i;
@@ -78,10 +79,13 @@ void parseLineCommandData(char* cmd)
 		case 'b': //b#=color
 			UpdateButtonColor(idx, value);
 			break;
+		case 'S': //update the BLE device address
+			if (idx != 99) break;
+			UpdateBleAddress(value);
+			break;
 		default:
 			break;
 		}
-
 	}
 }
 
@@ -101,5 +105,11 @@ void parseG6Command(char* cmd)
 		communication_tx_commandline(MasterCommPort, cmd);
 		break;
 	}
+}
+
+void UpdateBleAddress(char* value)
+{
+	int address = atoi(value);
+	ble_update_name(address);
 }
 

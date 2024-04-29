@@ -86,9 +86,9 @@ void ui_settings_event_switch_cb(lv_event_t* e)
 	if (data == &systemconfig.bluetooth.server_enabled)
 	{
 		if (state) {
-			systemconfig.bluetooth.server_enabled = ble_server_enable();
+			ble_enable();
 		}
-		else ble_server_disable();
+		else ble_disable();
 		
 		if (systemconfig.bluetooth.server_enabled) lv_obj_add_state(ui_settings.ui_bluetooth.status, LV_STATE_CHECKED);
 		else lv_obj_clear_state(ui_settings.ui_bluetooth.status, LV_STATE_CHECKED);

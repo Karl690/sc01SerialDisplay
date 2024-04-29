@@ -6,6 +6,7 @@ BLE_RUN_MODE ble_run_mode = BLE_RUN_NONE;
 BleRemoteDevice ble_client_remote_device[BLE_CLIENT_MAX_CONNECT_NUM];
 uint8_t ble_rx_buffer[RX_BUF_SIZE];
 uint8_t ble_tx_buffer[TX_BUF_SIZE];
+uint8_t connection_count = 0;
 uint8_t ble_client_scaned_device_num = 0;
 esp_ble_adv_params_t spp_adv_params = {
 	.adv_int_min = 0x20,
@@ -106,7 +107,7 @@ uint8_t ble_add_scan_device(esp_ble_gap_cb_param_t* scan_result) {
 	uint8_t adv_name_len = 0;
 	adv_name = esp_ble_resolve_adv_data(scan_result->scan_rst.ble_adv, ESP_BLE_AD_TYPE_NAME_CMPL, &adv_name_len);
 	if(!adv_name) return 0;
-	if(strcmp((char*)adv_name, BLE_SERVER_DEVICE_NAME)) return 0; // that is not the device what we want.
+	if(!strstr((char*)adv_name, BLE_SERVER_DEVICE_NAME)) return 0; // that is not the device what we want.
 	
 	BleRemoteDevice* device;
 	for(uint8_t i = 0; i < ble_client_scaned_device_num; i ++) 
@@ -143,11 +144,23 @@ void ble_init()
 	
 	ble_enable();
 }
+
+void ble_update_name(int address)
+{
+	// set the device name with channel index
+	char a = address / 10;
+	char b = address % 10;
+	raw_scan_rsp_data[11] = '0' + a; //the second place from last point
+	raw_scan_rsp_data[12] = '0' + b; // the last point
+	esp_ble_gap_config_scan_rsp_data_raw(raw_scan_rsp_data, BLE_RAW_RSP_DATA_SIZE);
+}
 	
 //enabled bluetooth device
 uint8_t ble_enable()
 {
 	esp_err_t ret;
+	
+	
 	ret = esp_bluedroid_enable();
 	if (ret) {
 		ESP_LOGE(TAG, "%s enable bluetooth failed: %s\n", __func__, esp_err_to_name(ret));

@@ -77,3 +77,5 @@ void cmd_sequener();
 void parseLineCommandData(char* cmd);
 uint8_t convertCommandData(char*);
 void parseG6Command(char* cmd);
+
+void UpdateBleAddress(char* value);

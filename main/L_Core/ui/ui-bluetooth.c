@@ -58,6 +58,11 @@ void ui_ble_disconnect_event_cb(lv_event_t* e)
 {
 	ble_server_disconnect();
 }
+
+void ui_ble_server_updatename_event_cb(lv_event_t* e)
+{
+	ble_update_name(0);
+}
 void ui_ble_scan_event_cb(lv_event_t* e) 
 {
 	//lv_obj_t * label = lv_obj_get_child(target, 0);
@@ -186,7 +191,11 @@ void ui_ble_screen_init()
 	
 	// server
 	
-	x = 10; y += 45;
+	x = 10; y = 45;
+	obj = ui_create_button(ui_ble_server_panel, "Update name", 200, 30, 2, &lv_font_montserrat_14, ui_ble_server_updatename_event_cb, NULL);
+	lv_obj_set_pos(obj, x, y);
+	
+	y += 45;
 	obj = lv_textarea_create(ui_ble_server_panel);
 	lv_obj_set_style_border_color(obj, lv_color_hex(UI_TEXTAREA_BORDER_COLOR), LV_PART_MAIN);
 	lv_obj_set_style_border_width(obj, 1, LV_PART_MAIN);

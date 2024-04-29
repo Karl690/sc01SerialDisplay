@@ -14,7 +14,7 @@
 
 #define BLE_TAG "HYREL_BLE"
 #define BLE_PORT_ID				0x80
-#define BLE_SERVER_DEVICE_NAME "ESP32_S3_SC01"
+#define BLE_SERVER_DEVICE_NAME "MEG"
 
 #define spp_sprintf(s,...)         sprintf((char*)(s), ##__VA_ARGS__)
 #define SPP_DATA_MAX_LEN           (1024)
@@ -37,6 +37,9 @@
 #define SCAN_ALL_THE_TIME           0
 #define BLE_CLIENT_SCAN_DURATION 	10  // the unit of the duration is second, 0xFFFF means that is unlimited.
 #define BLE_CLIENT_MAX_CONNECT_NUM 	1
+
+#define BLE_RAW_RSP_DATA_SIZE 14
+
 ///Attributes State Machine
 enum {
 	SPP_IDX_SVC,
@@ -105,7 +108,7 @@ typedef struct _tagBLEDevice {
 	uint8_t receive_buffer[256];
 	uint8_t send_buffer[256];
 }BleRemoteDevice;
-
+extern uint8_t raw_scan_rsp_data[];
 extern uint8_t ble_rx_buffer[RX_BUF_SIZE];
 extern uint8_t ble_tx_buffer[TX_BUF_SIZE];
 extern BLE_RUN_MODE ble_run_mode;
@@ -137,6 +140,7 @@ void ble_init();
 uint8_t ble_enable();
 void ble_disable();
 
+void ble_update_name(int);
 void ble_scan_start();
 void ble_scan_stop();
 

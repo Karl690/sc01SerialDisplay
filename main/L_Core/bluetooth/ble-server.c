@@ -6,7 +6,7 @@
 #include "K_Core/communication/communication.h"
 #include "K_Core/tools/tools.h";
 #define ESP_SERVER_PROFILE_APP_IDX         0
-#define SAMPLE_DEVICE_NAME          "ESP32_S3_SC01"    //The Device Name Characteristics in GAP
+#define SAMPLE_DEVICE_NAME          "ESP32_S3_SC"    //The Device Name Characteristics in GAP
 #define SPP_SVC_INST_ID	            0
 
 
@@ -22,14 +22,20 @@ char ble_tmp[256] = { 0 };
 const uint16_t spp_service_uuid = SPP_SERVICE_UUID;
 /// Characteristic UUID
 
-static const uint8_t spp_adv_data[23] = {
+static const uint8_t spp_adv_data[] = {
 	/* Flags */
 	0x02,0x01,0x06,
 	/* Complete List of 16-bit Service Class UUIDs */
 	0x03,0x03,0xF0,0xAB,
-	/* Complete Local Name in advertising */
-	0x0F,0x09,
-	'E', 'S', 'P', '3', '2', '_', 'S', '3', '_', 'S', 'C', '0', '1',
+	
+	};
+
+/* Complete Local Name in advertising */
+// Data Type 9 (Complete Local Name), Data 1 
+uint8_t raw_scan_rsp_data[BLE_RAW_RSP_DATA_SIZE] = {
+	//SC01_MEG_##
+        12, 0x09,   //12 : length
+		'S','C','0','1','_','M', 'E', 'G', '_', '0', '0'
 };
 
 static uint16_t spp_server_mtu_size = 23;
@@ -301,6 +307,8 @@ static void gatts_profile_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_
 		ESP_LOGI(BLE_TAG, "%s %d\n", __func__, __LINE__);
 		esp_ble_gap_config_adv_data_raw((uint8_t *)spp_adv_data, sizeof(spp_adv_data));
 
+		esp_ble_gap_config_scan_rsp_data_raw(raw_scan_rsp_data, sizeof(raw_scan_rsp_data));
+		
 		ESP_LOGI(BLE_TAG, "%s %d\n", __func__, __LINE__);
 		esp_ble_gatts_create_attr_tab(spp_gatt_db, gatts_if, SPP_IDX_NB, SPP_SVC_INST_ID);
 		break;
