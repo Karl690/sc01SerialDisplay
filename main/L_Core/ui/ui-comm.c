@@ -3,6 +3,7 @@
 #include "main.h"
 #include "K_Core/serial/serial.h"
 #include "K_Core/communication/communication.h"
+#include "L_Core/ui/ui-bluetooth.h"
 #include "RevisionHistory.h"
 #include "L_Core/bluetooth/ble.h"
 
@@ -51,10 +52,12 @@ void ui_comm_event_button_cb(lv_event_t* e)
 		ui_comm_clear_log();
 		break;
 	case UI_COMM_BTN_OK:
-		ui_transform_screen(SCREEN_PCT);
+		ui_transform_screen(SCREEN_BLUETOOTH);
+		ui_ble_switch_screen(0);
 		break;
 	case UI_COMM_BTN_PING:
 		SendPing();
+		
 		break;
 	case UI_COMM_BTN_XMIT:
 		ui_comm_is_xmit = !ui_comm_is_xmit;

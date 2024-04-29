@@ -4,6 +4,7 @@
 #include "L_Core/ui/ui-comm.h"
 #include "K_Core/serial/serial.h"
 #include "L_Core/bluetooth/ble.h"
+#include "L_Core/ui/ui-bluetooth.h"
 //#include "K_core/communication/communication.h"
 #include "RevisionHistory.h"
 
@@ -43,8 +44,19 @@ void ui_pct_event_button_cb(lv_event_t* e)
 	case KEYBOARD_PROG:  strcpy(ui_pct_temp, KEYBOARD_PROG_STRING); break;
 	case KEYBOARD_DIAG:  strcpy(ui_pct_temp, KEYBOARD_DIAG_STRING); break;
 	case KEYBOARD_ENTER: strcpy(ui_pct_temp, KEYBOARD_ENTER_STRING); break;
-	case KEYBOARD_COMM:	strcpy(ui_pct_temp, KEYBOARD_COMM_STRING); ui_transform_screen(SCREEN_COMM); return;
-	case KEYBOARD_HOME:	strcpy(ui_pct_temp, KEYBOARD_HOME_STRING); ui_transform_screen(SCREEN_HOME); return;
+	case KEYBOARD_COMM: {
+			if (ble_run_mode == BLE_RUN_CLIENT) {
+				ui_transform_screen(SCREEN_BLUETOOTH);
+				ui_ble_switch_screen(1);
+			}
+			else {
+				ui_transform_screen(SCREEN_COMM);
+			}
+			return;
+		}
+	case KEYBOARD_HOME: {
+			strcpy(ui_pct_temp, KEYBOARD_HOME_STRING); ui_transform_screen(SCREEN_HOME); return;
+		}
 	case KEYBOARD_BACK: strcpy(ui_pct_temp, KEYBOARD_BACK_STRING); break;
 	}
 	uint8_t len = strlen(ui_pct_temp);
