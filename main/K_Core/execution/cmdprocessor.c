@@ -92,14 +92,17 @@ void parseLineCommandData(char* cmd)
 void parseG6Command(char* cmd)
 {
 	//G6 B#\n
-	int code = atoi(cmd + 4); //go to place of Number
-	switch (code)
+	char code = cmd[3];
+	int value = atoi(cmd + 4); //go to place of Number
+	switch (value)
 	{
 	case 18: //transform comm  screen
 		ui_transform_screen(SCREEN_COMM);	
 		break;
 	case 19: //transform home screen
 		ui_transform_screen(SCREEN_HOME);
+		break;
+	case 99: //G6 S99 ; this is a request to update the ble name from 407		
 		break;
 	default:
 		communication_tx_commandline(MasterCommPort, cmd);

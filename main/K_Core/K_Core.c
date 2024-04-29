@@ -28,6 +28,8 @@ void K_Core_Main()
 	
 	Init_TaskManager();
 	SendPing();
+	requestBleNameTo407();
+	//communication_add_string_to_serial_buffer(&MasterCommPort->TxBuffer, "G6 S99\n");
 	//xTaskCreatePinnedToCore(forground_task, "forground_task", 1024 * 2, NULL, 10, NULL, 1);
 	while (1)
 	{	
@@ -45,3 +47,7 @@ void forground_task(void* arg) {
 	}
 }
 
+void requestBleNameTo407()
+{
+	communication_add_string_to_serial_buffer(&MasterCommPort->TxBuffer, "G6 S99\n");	
+}
