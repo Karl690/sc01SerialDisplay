@@ -5,7 +5,9 @@
 #include "L_Core/ui/ui.h"
 #include "L_Core/ui/ui-comm.h"
 #include "L_Core/ui/ui-pct.h"
+#include "L_Core/ui/ui-bluetooth.h"
 #include "L_Core/bluetooth/ble.h"
+
 uint32_t cmd_NextCommandInsertionPointer = 1;
 uint32_t cmd_CurrentPointer = 1;
 uint32_t cmd_CommandsInQue = 0;

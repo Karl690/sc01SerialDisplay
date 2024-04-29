@@ -1,4 +1,5 @@
 #include "main.h"
+#include "K_Core/K_Core.h"
 #include "L_Core/bluetooth/ble.h"
 #include "K_Core/tools/tools.h"
 #include "L_Core/storage/nvs.h"
@@ -24,6 +25,7 @@ lv_obj_t* ui_ble_server_sent_total;
 lv_obj_t* ui_ble_server_receive_total;
 lv_obj_t* ui_ble_server_sent_status;
 lv_obj_t* ui_ble_server_receive_status;
+lv_obj_t* ui_ble_server_name;
 
 BleRemoteDevice* selected_device = NULL;
 ble_server_status_t  prev_ble_server_status = BLE_SERVER_LISTENING;
@@ -61,7 +63,7 @@ void ui_ble_disconnect_event_cb(lv_event_t* e)
 
 void ui_ble_server_updatename_event_cb(lv_event_t* e)
 {
-	ble_update_name(0);
+	requestBleNameTo407();
 }
 void ui_ble_scan_event_cb(lv_event_t* e) 
 {
@@ -190,9 +192,12 @@ void ui_ble_screen_init()
 	ui_ble_client_panel = obj;
 	
 	// server
+	x = 10; y = 5;
+	obj = ui_create_label(ui_ble_server_panel, "MEG_SC01_00", &lv_font_montserrat_30);
+	lv_obj_set_pos(obj, x, y); ui_ble_server_name = obj;
 	
-	x = 10; y = 45;
-	obj = ui_create_button(ui_ble_server_panel, "Update name", 200, 30, 2, &lv_font_montserrat_14, ui_ble_server_updatename_event_cb, NULL);
+	x = 10; y = 40;
+	obj = ui_create_button(ui_ble_server_panel, "Request Name", 200, 30, 2, &lv_font_montserrat_14, ui_ble_server_updatename_event_cb, NULL);
 	lv_obj_set_pos(obj, x, y);
 	
 	y += 45;
@@ -365,4 +370,9 @@ void ui_ble_set_received_data(BleRemoteDevice* dev)
 	lv_label_set_text(ui_ble_receive, (const char*)dev->last_received_buffer);
 	sprintf(ui_temp_string, "%d", (int)dev->total_received);
 	lv_label_set_text(ui_ble_total_received, ui_temp_string);
+}
+
+void ui_ble_set_servername(char* name)
+{
+	lv_label_set_text(ui_ble_server_name, name); 
 }

@@ -153,6 +153,8 @@ void ble_update_name(int address)
 	raw_scan_rsp_data[11] = '0' + a; //the second place from last point
 	raw_scan_rsp_data[12] = '0' + b; // the last point
 	esp_ble_gap_config_scan_rsp_data_raw(raw_scan_rsp_data, BLE_RAW_RSP_DATA_SIZE);
+	
+	ui_ble_set_servername((char*)(raw_scan_rsp_data + 2)); //it should start from 2 byte.
 }
 	
 //enabled bluetooth device
