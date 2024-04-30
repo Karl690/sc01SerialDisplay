@@ -116,19 +116,43 @@ void ui_comm_screen_init(void)
 	ui_create_pct_title(ui_comm_screen);
 	
 	int x = 20, y = 70;
+	int button_w = 60;
+	int button_large_width = 90;
+	int button_h = 45;
 	int gap = 5;
 	
-	
-	lv_obj_t* obj = ui_create_label(ui_comm_screen, (char*)"SERIAL", &mono_bold_28);	
-	lv_obj_set_pos(obj, 250, 7);
+	lv_obj_t* obj = ui_create_label(ui_comm_screen, (char*)"SERIAL" MajorStep, &mono_bold_28);	
+	lv_obj_set_pos(obj, 230, 7);
 	
 	gap = 5;
-	x = 10, y = 60 + gap;
-	int btn_width = 80;
-	int btn_height = 35;
-	obj = ui_create_button(ui_comm_screen, "PING", btn_width, btn_height, 2, font, ui_comm_event_button_cb, (void*)UI_COMM_BTN_PING);
+	x = 10, y = 50 + gap;
+	obj = ui_create_button(ui_comm_screen, "PING", button_large_width, button_h, 2, font, ui_comm_event_button_cb, (void*)UI_COMM_BTN_PING);
 	lv_obj_set_pos(obj, x, y);
-	y += btn_height + gap;
+	
+	x = button_large_width + gap * 5;
+	obj = ui_create_label(ui_comm_screen, "TxAck#:", &lv_font_montserrat_16);
+	lv_obj_set_pos(obj, x, y+10);
+	obj = ui_create_label(ui_comm_screen, "0", &lv_font_montserrat_16);
+	lv_obj_set_pos(obj, x + 55, y+10); ui_comm_lbl_tx_acks = obj;
+	x += 120;
+	obj = ui_create_label(ui_comm_screen, "RxAck#:", &lv_font_montserrat_16);
+	lv_obj_set_pos(obj, x, y+10);
+	obj = ui_create_label(ui_comm_screen, "0", &lv_font_montserrat_16);
+	lv_obj_set_pos(obj, x + 55, y+10); ui_comm_lbl_rx_acks = obj;
+	
+	
+	obj = ui_create_button(ui_comm_screen, "SSD", button_w, button_h, 2, font, ui_comm_event_button_cb, (void*)UI_COMM_BTN_SSD);
+	lv_obj_set_pos(obj, SCREEN_WIDTH - 2* (button_w + 5), y); ui_comm_btn_ssd = obj;
+	ui_change_button_color(obj, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
+	
+	x = SCREEN_WIDTH - button_w - 5;
+	obj = ui_create_button(ui_comm_screen, "ACK", button_w, button_h, 2, font, ui_comm_event_button_cb, (void*)UI_COMM_BTN_ACK);
+	ui_change_button_color(obj, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
+	lv_obj_set_pos(obj, x, y);
+	ui_comm_btn_ack = obj;
+	
+	y += button_h + gap;
+	x = 10;
 	
 	obj = ui_create_label(ui_comm_screen, LV_SYMBOL_UP, &lv_font_montserrat_20);
 	lv_obj_set_style_text_color(obj, lv_color_hex(UI_BUTTON_DISABLE_FG_COLOR), LV_PART_MAIN);	
@@ -142,18 +166,18 @@ void ui_comm_screen_init(void)
 	ui_comm_lbl_xmit_count = obj;
 	y += 25;
 	
-	obj = ui_create_button(ui_comm_screen, "XMIT", btn_width, btn_height, 2, font, ui_comm_event_button_cb, (void*)UI_COMM_BTN_XMIT);
+	obj = ui_create_button(ui_comm_screen, "XMIT", button_large_width, button_h, 2, font, ui_comm_event_button_cb, (void*)UI_COMM_BTN_XMIT);
 	ui_change_button_color(obj, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
 	lv_obj_set_pos(obj, x, y);
 	ui_comm_btn_xmit = obj;
 	
-	y += btn_height + gap;
-	obj = ui_create_button(ui_comm_screen, "RCV", btn_width, btn_height, 2, font, ui_comm_event_button_cb, (void*)UI_COMM_BTN_RCV);
+	y += button_h + gap;
+	obj = ui_create_button(ui_comm_screen, "RCV", button_large_width, button_h, 2, font, ui_comm_event_button_cb, (void*)UI_COMM_BTN_RCV);
 	ui_change_button_color(obj, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
 	lv_obj_set_pos(obj, x, y);
 	ui_comm_btn_rcv = obj;
 	
-	y += btn_height +gap;
+	y += button_h +gap;
 	obj = ui_create_label(ui_comm_screen, LV_SYMBOL_DOWN, &lv_font_montserrat_20);
 	lv_obj_set_style_text_color(obj, lv_color_hex(UI_BUTTON_DISABLE_FG_COLOR), LV_PART_MAIN);	
 	lv_obj_set_pos(obj, x, y);
@@ -167,19 +191,16 @@ void ui_comm_screen_init(void)
 	ui_comm_lbl_rcv_count = obj;
 	y += 25;
 	
-	obj = ui_create_button(ui_comm_screen, "HEX", btn_width, btn_height, 2, font, ui_comm_event_button_cb, (void*)UI_COMM_BTN_HEX);
+	obj = ui_create_button(ui_comm_screen, "HEX", button_large_width, button_h, 2, font, ui_comm_event_button_cb, (void*)UI_COMM_BTN_HEX);
 	ui_change_button_color(obj, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
 	lv_obj_set_pos(obj, x, y);
 	ui_comm_btn_hex = obj;
 	
-	y += btn_height + gap;
-	obj = ui_create_label(ui_comm_screen, "v" MajorStep, &mono_regualr_16);	
-	lv_obj_set_pos(obj, x, y);
-	
+
 	
 	obj = lv_obj_create(ui_comm_screen);
-	lv_obj_set_size(obj, SCREEN_WIDTH - btn_width - gap * 3, SCREEN_HEIGHT - 100);
-	lv_obj_set_pos(obj, btn_width + gap*3, 60+ gap); 
+	lv_obj_set_size(obj, SCREEN_WIDTH - button_large_width - gap * 3, SCREEN_HEIGHT - 120);
+	lv_obj_set_pos(obj, button_large_width + gap*3, (button_h+ gap)*2 + gap); 
 	lv_obj_set_style_pad_all(obj, 0, LV_PART_MAIN);
 	lv_obj_set_style_bg_color(obj, lv_color_hex(UI_PANEL_BACGROUND_COLOR), LV_PART_MAIN);
 	ui_comm_display_panel = obj;
@@ -194,28 +215,7 @@ void ui_comm_screen_init(void)
 		lv_obj_set_x(obj, 5); 
 		lv_obj_add_flag(obj, LV_OBJ_FLAG_HIDDEN);
 	}
-	x = btn_width + gap * 3;
-	y = SCREEN_HEIGHT - 30;
-	obj = ui_create_label(ui_comm_screen, "TxAck#:", &lv_font_montserrat_14);
-	lv_obj_set_pos(obj, x, y);
-	obj = ui_create_label(ui_comm_screen, "0", &lv_font_montserrat_14);
-	lv_obj_set_pos(obj, x + 55, y); ui_comm_lbl_tx_acks = obj;
-	x +=120;
-	obj = ui_create_label(ui_comm_screen, "RxAck#:", &lv_font_montserrat_14);
-	lv_obj_set_pos(obj, x, y);
-	obj = ui_create_label(ui_comm_screen, "0", &lv_font_montserrat_14);
-	lv_obj_set_pos(obj, x + 55, y); ui_comm_lbl_rx_acks = obj;
-	
-	
-	obj = ui_create_button(ui_comm_screen, "SSD", btn_width, btn_height, 2, font, ui_comm_event_button_cb, (void*)UI_COMM_BTN_SSD);
-	lv_obj_set_pos(obj, SCREEN_WIDTH - 2* (btn_width + 5), y); ui_comm_btn_ssd = obj;
-	ui_change_button_color(obj, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
-	
-	x = SCREEN_WIDTH - btn_width - 5;
-	obj = ui_create_button(ui_comm_screen, "ACK", btn_width, btn_height-5, 2, font, ui_comm_event_button_cb, (void*)UI_COMM_BTN_ACK);
-	ui_change_button_color(obj, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
-	lv_obj_set_pos(obj, x, y);
-	ui_comm_btn_ack = obj;
+
 	
 	lv_timer_create(ui_comm_update_indicator_timer, 500, NULL);
 	

@@ -181,7 +181,7 @@ void ui_create_pct_title(lv_obj_t* parent)
 	lv_obj_set_pos(obj, x += button_large_width + gap, 2);
 	
 	obj = ui_create_button(parent, LV_SYMBOL_REFRESH, button_w, button_h, 2, &lv_font_montserrat_16, ui_event_title_button_cb, (void*)UI_BTN_SWAP);
-	lv_obj_set_pos(obj, SCREEN_WIDTH - button_w - 5, 2); 
+	lv_obj_set_pos(obj, SCREEN_WIDTH - button_w - 5, 2);
 }
 
 
