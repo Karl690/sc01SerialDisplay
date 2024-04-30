@@ -48,13 +48,6 @@ void ui_comm_event_button_cb(lv_event_t* e)
 		ui_change_button_color(ui_comm_btn_ssd, ui_comm_is_ssd ? UI_BUTTON_ACTIVE_BG_COLOR : UI_BUTTON_DISABLE_BG_COLOR, ui_comm_is_ssd ? UI_BUTTON_ACTIVE_FG_COLOR : UI_BUTTON_DISABLE_FG_COLOR);
 		SendDisplayStatusCode(ui_comm_is_ssd);
 		break;
-	case UI_COMM_BTN_CLEAR:
-		ui_comm_clear_log();
-		break;
-	case UI_COMM_BTN_OK:
-		ui_transform_screen(SCREEN_BLUETOOTH);
-		ui_ble_switch_screen(0);
-		break;
 	case UI_COMM_BTN_PING:
 		SendPing();
 		
@@ -119,23 +112,20 @@ void ui_comm_screen_init(void)
 	const lv_font_t* font = &lv_font_montserrat_16;
 	ui_comm_screen = ui_create_screen();	
 	
-	lv_obj_t * obj;	
-	obj = ui_create_label(ui_comm_screen, (char*)"HYPERCLEAN MEGASONIC", &mono_bold_28);	
-	lv_obj_set_pos(obj, 100, 2);
 	
+	ui_create_pct_title(ui_comm_screen);
+	
+	int x = 20, y = 70;
 	int gap = 5;
-	int x = 10, y = 40 + gap;
+	
+	
+	lv_obj_t* obj = ui_create_label(ui_comm_screen, (char*)"SERIAL", &mono_bold_28);	
+	lv_obj_set_pos(obj, 250, 7);
+	
+	gap = 5;
+	x = 10, y = 60 + gap;
 	int btn_width = 80;
 	int btn_height = 35;
-	obj = ui_create_button(ui_comm_screen, LV_SYMBOL_REFRESH, btn_width, btn_height, 2, font, ui_comm_event_button_cb, (void*)UI_COMM_BTN_OK);
-	lv_obj_set_pos(obj, x, 2);
-	obj = ui_create_button(ui_comm_screen, "CLEAR", btn_width, btn_height, 2, font, ui_comm_event_button_cb, (void*)UI_COMM_BTN_CLEAR);
-	lv_obj_set_pos(obj, SCREEN_WIDTH - btn_width - 5, 2);
-	obj = ui_create_button(ui_comm_screen, "SSD", btn_width, btn_height, 2, font, ui_comm_event_button_cb, (void*)UI_COMM_BTN_SSD);
-	lv_obj_set_pos(obj, x, y);  ui_comm_btn_ssd = obj;
-	ui_change_button_color(obj, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
-	
-	y += btn_height + gap;
 	obj = ui_create_button(ui_comm_screen, "PING", btn_width, btn_height, 2, font, ui_comm_event_button_cb, (void*)UI_COMM_BTN_PING);
 	lv_obj_set_pos(obj, x, y);
 	y += btn_height + gap;
@@ -188,8 +178,8 @@ void ui_comm_screen_init(void)
 	
 	
 	obj = lv_obj_create(ui_comm_screen);
-	lv_obj_set_size(obj, SCREEN_WIDTH - btn_width - gap * 3, SCREEN_HEIGHT - 80);
-	lv_obj_set_pos(obj, btn_width + gap*3, 40+ gap); 
+	lv_obj_set_size(obj, SCREEN_WIDTH - btn_width - gap * 3, SCREEN_HEIGHT - 100);
+	lv_obj_set_pos(obj, btn_width + gap*3, 60+ gap); 
 	lv_obj_set_style_pad_all(obj, 0, LV_PART_MAIN);
 	lv_obj_set_style_bg_color(obj, lv_color_hex(UI_PANEL_BACGROUND_COLOR), LV_PART_MAIN);
 	ui_comm_display_panel = obj;
@@ -215,6 +205,11 @@ void ui_comm_screen_init(void)
 	lv_obj_set_pos(obj, x, y);
 	obj = ui_create_label(ui_comm_screen, "0", &lv_font_montserrat_14);
 	lv_obj_set_pos(obj, x + 55, y); ui_comm_lbl_rx_acks = obj;
+	
+	
+	obj = ui_create_button(ui_comm_screen, "SSD", btn_width, btn_height, 2, font, ui_comm_event_button_cb, (void*)UI_COMM_BTN_SSD);
+	lv_obj_set_pos(obj, SCREEN_WIDTH - 2* (btn_width + 5), y); ui_comm_btn_ssd = obj;
+	ui_change_button_color(obj, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
 	
 	x = SCREEN_WIDTH - btn_width - 5;
 	obj = ui_create_button(ui_comm_screen, "ACK", btn_width, btn_height-5, 2, font, ui_comm_event_button_cb, (void*)UI_COMM_BTN_ACK);

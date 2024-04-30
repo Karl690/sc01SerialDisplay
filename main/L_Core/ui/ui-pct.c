@@ -20,6 +20,23 @@ lv_obj_t* ui_pct_label_lines[5];
 bool ui_pct_is_refresh_line = false;
 char ui_pct_lines[5][50] = { 0 };
 char ui_pct_temp[256] = { 0 };
+
+void ui_pct_clear_log()
+{
+	strcpy(ui_pct_temp, KEYBOARD_CLEAR_STRING);
+	uint8_t len = strlen(ui_pct_temp);
+	if (ble_run_mode == BLE_RUN_CLIENT) //client => server
+		ble_client_write_data((uint8_t*)ui_pct_temp, len);
+	else {
+		//server => client
+		if (ble_run_mode == BLE_RUN_SERVER)
+		{
+			ble_server_send_data((uint8_t*)ui_pct_temp, len);	
+		}
+		communication_tx_commandline(MasterCommPort, ui_pct_temp);
+	}
+	
+}
 void ui_pct_event_button_cb(lv_event_t* e)
 {
 	uint8_t code = (uint8_t)(int)lv_event_get_user_data(e);
@@ -85,23 +102,11 @@ void ui_pct_screen_init(void)
 	const lv_font_t* font = &lv_font_montserrat_16;
 	ui_pct_screen = ui_create_screen();	
 	
-	LV_IMG_DECLARE(img_mark);
-	
-	lv_obj_t* logbutton = lv_btn_create(ui_pct_screen);
-	lv_obj_add_flag(logbutton, LV_OBJ_FLAG_SCROLL_ON_FOCUS); /// Flags
-	lv_obj_set_size(logbutton, 65, 45);
-	lv_obj_set_style_bg_color(logbutton, lv_color_hex(0x0), LV_PART_MAIN | LV_STATE_DEFAULT);
-	
-	lv_obj_t * obj = lv_img_create(logbutton);
-	lv_img_set_src(obj, &img_mark);
-	lv_img_set_zoom(obj, 100);
-	lv_obj_set_pos(obj, -65, -45);
-	lv_obj_add_event_cb(logbutton, ui_pct_event_button_cb, LV_EVENT_CLICKED, (void*)KEYBOARD_HOME);	
-	
-	lv_obj_set_pos(logbutton, 20, 5);
 	
 	
-	obj = ui_create_label(ui_pct_screen, "0", &lv_font_montserrat_20);	
+	ui_create_pct_title(ui_pct_screen);
+	
+	lv_obj_t* obj = ui_create_label(ui_pct_screen, "0", &lv_font_montserrat_20);	
 	lv_obj_set_pos(obj, 230, 15);
 	ui_pct_line_4 = obj;
 	//obj = ui_create_label(ui_pct_screen, SYSTEMVERSION, &mono_regualr_16);	
@@ -115,11 +120,12 @@ void ui_pct_screen_init(void)
 	
 	int x = 20, y = 60;
 	
-	obj = ui_create_button(ui_pct_screen, LV_SYMBOL_REFRESH, button_large_width, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_COMM);
-	lv_obj_set_pos(obj, x += button_large_width + gap, 2); ui_pct_keyboard[KEYBOARD_COMM] = obj;
+	obj = ui_create_button(ui_pct_screen, "CLR", button_large_width, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_CLEAR);
+	lv_obj_set_pos(obj, x += button_large_width + gap, 2); ui_pct_keyboard[KEYBOARD_CLEAR] = obj;
 	
-	obj = ui_create_button(ui_pct_screen, "CLR", button_w, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_CLEAR);
-	lv_obj_set_pos(obj, SCREEN_WIDTH - button_w - 5, 2); ui_pct_keyboard[KEYBOARD_CLEAR] = obj;
+	obj = ui_create_button(ui_pct_screen, LV_SYMBOL_REFRESH, button_w, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_COMM);
+	lv_obj_set_pos(obj, SCREEN_WIDTH - button_w - 5, 2); ui_pct_keyboard[KEYBOARD_COMM] = obj;
+	
 	x = 20; 
 	obj = ui_create_button(ui_pct_screen, "PROG", button_large_width, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_PROG);
 	ui_change_button_color(obj, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);

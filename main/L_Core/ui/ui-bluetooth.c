@@ -165,22 +165,13 @@ void ui_ble_screen_init()
 	lv_obj_t* obj;
 	uint16_t x, y;
 	ui_ble_screen = ui_create_screen();	
-	lv_obj_t* titlebar = ui_create_titlebar(ui_ble_screen, TITLEBAR_BACKGROUND_COLOR);
+	ui_create_pct_title(ui_ble_screen);
+	//lv_obj_t* titlebar = ui_create_titlebar(ui_ble_screen, TITLEBAR_BACKGROUND_COLOR);
 	
-	lv_obj_t* title_label = lv_label_create(titlebar);	
-	lv_obj_set_width(title_label, LV_SIZE_CONTENT);
-	lv_obj_set_height(title_label, LV_SIZE_CONTENT);
-	lv_label_set_recolor(title_label, true);
-	lv_obj_set_style_text_color(title_label, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
-	lv_label_set_text(title_label, "BLUETOOTH");
-	lv_obj_set_style_text_font(title_label, &lv_font_montserrat_16, LV_PART_MAIN | LV_STATE_DEFAULT);	
-	lv_obj_align(title_label, LV_ALIGN_CENTER, 0, 0);
+	obj = ui_create_label(ui_ble_screen, (char*)"BLUETOOTH", &mono_bold_28);	
+	lv_obj_set_pos(obj, 250, 7);
 	
-	obj = ui_create_button(ui_ble_screen, LV_SYMBOL_REFRESH, 40, 50, 2, &lv_font_montserrat_16, ui_ble_event_swap_cb, (void*)NULL);
-	lv_obj_set_pos(obj, SCREEN_WIDTH - 45, -6); ;
-	ui_change_button_color(obj, TITLEBAR_BACKGROUND_COLOR, UI_BUTTON_NORMAL_FG_COLOR);	
-	
-	y = 42;
+	y = 60;
 	obj = ui_create_button(ui_ble_screen, "SERVER", SCREEN_WIDTH / 2 - 1, 30, 3, &lv_font_montserrat_14, ui_ble_switch_event_cb, (void*)0);	
 	lv_obj_set_pos(obj, 0, y);
 	ui_ble_server_button = obj;

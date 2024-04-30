@@ -64,6 +64,7 @@ extern lv_obj_t* ui_pct_screen;
 
 void ui_pct_screen_init(void);
 
+void ui_pct_clear_log();
 void UpdateLabelText(int index, char* value);
 void UpdateLabelColor(int index, char* value);
 void UpdateButtonText(int index, char* value);

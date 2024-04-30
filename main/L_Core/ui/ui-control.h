@@ -2,6 +2,7 @@
 #include "ui.h"
 typedef enum
 {
+	
 	CONTROLS_FAN_MINUS,
 	CONTROLS_FAN_PLUS,
 	CONTROLS_HEAT_MINUS,

@@ -8,7 +8,7 @@
 
 #include "ui.h"
 #include "ui_helpers.h"
-#include "images/resource_img.h"
+//#include "images/resource_img.h"
 
 #include "ui-splash.h"
 #include "ui-home.h"
@@ -19,11 +19,14 @@
 #include "ui-comm.h"
 #include "ui-bluetooth.h"
 
+LV_IMG_DECLARE(img_mark);
+
 lv_obj_t * keyboard;
 lv_obj_t* msgbox;
 lv_obj_t* msgbox_label;
 uint8_t ui_initialized = 0;
 char ui_temp_string[256];
+SCREEN_TYPE ui_current_screen = SCREEN_PCT;
 
 lv_obj_t* ui_create_screen()
 {
@@ -110,6 +113,78 @@ lv_obj_t* ui_create_button(lv_obj_t* parent,
 }
 
 
+void ui_event_title_button_cb(lv_event_t* e)
+{
+	uint8_t code = (uint8_t)(int)lv_event_get_user_data(e);
+	switch (code)
+	{
+	case UI_BTN_HOME:
+		ui_transform_screen(SCREEN_HOME);
+		break;
+	case UI_BTN_CLEAR:
+		switch ((uint8_t)ui_current_screen)
+		{
+		case SCREEN_PCT:
+			ui_pct_clear_log();
+			break;
+		case SCREEN_COMM:
+			ui_comm_clear_log();
+			break;
+		}
+		break;
+	case UI_BTN_SWAP:
+		switch ((uint8_t)ui_current_screen)
+		{
+		case SCREEN_PCT:
+			if (ble_run_mode == BLE_RUN_CLIENT)
+			{
+				ui_transform_screen(SCREEN_BLUETOOTH);
+				ui_ble_switch_screen(1);
+			}
+			else
+			{
+				ui_transform_screen(SCREEN_COMM);
+			}
+			break;
+		case SCREEN_COMM:
+			ui_transform_screen(SCREEN_BLUETOOTH);
+			ui_ble_switch_screen(0);
+			break;
+		case SCREEN_BLUETOOTH:
+			ui_transform_screen(SCREEN_PCT);
+			break;
+		}
+		break;
+	}
+}
+void ui_create_pct_title(lv_obj_t* parent)
+{	
+	lv_obj_t* logbutton = lv_btn_create(parent);
+	lv_obj_add_flag(logbutton, LV_OBJ_FLAG_SCROLL_ON_FOCUS); /// Flags
+	lv_obj_set_size(logbutton, 65, 45);
+	lv_obj_set_style_bg_color(logbutton, lv_color_hex(0x0), LV_PART_MAIN | LV_STATE_DEFAULT);
+	
+	lv_obj_t * obj = lv_img_create(logbutton);
+	lv_img_set_src(obj, &img_mark);
+	lv_img_set_zoom(obj, 100);
+	lv_obj_set_pos(obj, -65, -45);
+	lv_obj_add_event_cb(logbutton, ui_event_title_button_cb, LV_EVENT_CLICKED, (void*)UI_BTN_HOME);		
+	lv_obj_set_pos(logbutton, 20, 5);
+	
+	int x = 20, y = 70;
+	int button_w = 60;
+	int button_large_width = 90;
+	int button_h = 50;
+	int gap = 5;
+	
+	obj = ui_create_button(parent, "CLR", button_large_width, button_h, 2, &lv_font_montserrat_16, ui_event_title_button_cb, (void*)UI_BTN_CLEAR);
+	lv_obj_set_pos(obj, x += button_large_width + gap, 2);
+	
+	obj = ui_create_button(parent, LV_SYMBOL_REFRESH, button_w, button_h, 2, &lv_font_montserrat_16, ui_event_title_button_cb, (void*)UI_BTN_SWAP);
+	lv_obj_set_pos(obj, SCREEN_WIDTH - button_w - 5, 2); 
+}
+
+
 void messagebox_delay_timer(lv_timer_t * timer)
 {
 	lv_obj_t* msgbox = (lv_obj_t*)timer->user_data;
@@ -150,7 +225,6 @@ void ui_create_messagebox()
 	lv_obj_center(msgbox);	
 	lv_obj_add_flag(msgbox, LV_OBJ_FLAG_HIDDEN);
 }
-
 void ui_transform_screen(SCREEN_TYPE screen)
 {
 	if (lv_obj_is_visible(keyboard)) lv_obj_add_flag(keyboard, LV_OBJ_FLAG_HIDDEN);
@@ -193,6 +267,7 @@ void ui_transform_screen(SCREEN_TYPE screen)
 	default:
 		break;
 	}
+	ui_current_screen = screen;
 }
 
 void ui_event_go_home_cb(lv_event_t* e)
