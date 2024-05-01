@@ -5,6 +5,7 @@
 #include "L_Core/ui/ui.h"
 #include "L_Core/ui/ui-comm.h"
 #include "L_Core/ui/ui-pct.h"
+#include "L_Core/ui/ui-pct01.h"
 #include "L_Core/ui/ui-bluetooth.h"
 #include "L_Core/bluetooth/ble.h"
 
@@ -70,16 +71,20 @@ void parseLineCommandData(char* cmd)
 		switch (command)
 		{
 		case 'L': //L#=string
-			UpdateLabelText(idx, value);
+			if (idx < 10) ui_pct_update_label_text(idx, value);
+			else ui_pct01_update_label_text(idx-10, value);
 			break;
 		case 'l': //l#=color
-			UpdateLabelColor(idx, value);
+			if (idx < 10) ui_pct_update_label_color(idx, value);
+			else ui_pct01_update_label_color(idx-10, value);
 			break;
 		case 'B': //B#=string
-			UpdateButtonText(idx, value);
+			ui_pct_update_button_text(idx, value);
+			ui_pct01_update_button_text(idx, value);
 			break;
 		case 'b': //b#=color
-			UpdateButtonColor(idx, value);
+			ui_pct_update_button_color(idx, value);
+			ui_pct01_update_button_color(idx, value);
 			break;
 		case 'S': //update the BLE device address
 			if (idx != 99) break;

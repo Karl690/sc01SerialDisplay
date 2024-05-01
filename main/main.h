@@ -28,3 +28,5 @@ extern bool IsInitialized;
 
 bool load_configuration();
 bool save_configuration();
+
+char *trim(char *s);

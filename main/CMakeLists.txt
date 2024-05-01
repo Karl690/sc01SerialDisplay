@@ -20,6 +20,7 @@ idf_component_register(
                 	L_Core/ui/ui-bluetooth.c
                 	L_Core/ui/ui-control.c
                 	L_Core/ui/ui-pct.c
+                    L_Core/ui/ui-pct01.c
                 	L_Core/ui/ui-comm.c
                 	L_Core/ui/images/btn_about.c
                 	L_Core/ui/images/copyright.c

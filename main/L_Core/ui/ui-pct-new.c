@@ -1,5 +1,5 @@
 #include "ui.h"
-#include "ui-pct.h"
+#include "ui-pct01.h"
 #include "main.h"
 #include "L_Core/ui/ui-comm.h"
 #include "K_Core/serial/serial.h"
@@ -8,20 +8,15 @@
 //#include "K_core/communication/communication.h"
 #include "RevisionHistory.h"
 
-lv_obj_t* ui_pct_screen;
-lv_obj_t* ui_pct_line_0;
-lv_obj_t* ui_pct_line_1;
-lv_obj_t* ui_pct_line_2;
-lv_obj_t* ui_pct_line_3;
-lv_obj_t* ui_pct_line_4;
-lv_obj_t* ui_pct_btn_prog;
+lv_obj_t* ui_pct01_screen;
+lv_obj_t* ui_pct01_btn_prog;
 lv_obj_t* ui_pct_keyboard[KEYBOARD_BACK+1];
-lv_obj_t* ui_pct_label_lines[5];
+lv_obj_t* ui_pct_label_lines[15];
 bool ui_pct_is_refresh_line = false;
-char ui_pct_lines[5][50] = { 0 };
+char ui_pct_lines[15][50] = { 0 };
 char ui_pct_temp[256] = { 0 };
 
-void ui_pct_clear_log()
+void ui_pct01_clear_log()
 {
 	strcpy(ui_pct_temp, KEYBOARD_CLEAR_STRING);
 	uint8_t len = strlen(ui_pct_temp);
@@ -119,6 +114,14 @@ void ui_pct_screen_init(void)
 	int gap = 5;
 	
 	int x = 20, y = 60;
+	
+	obj = ui_create_button(ui_pct_screen, "CLR", button_large_width, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_CLEAR);
+	lv_obj_set_pos(obj, x += button_large_width + gap, 2); ui_pct_keyboard[KEYBOARD_CLEAR] = obj;
+	
+	obj = ui_create_button(ui_pct_screen, LV_SYMBOL_REFRESH, button_w, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_COMM);
+	lv_obj_set_pos(obj, SCREEN_WIDTH - button_w - 5, 2); ui_pct_keyboard[KEYBOARD_COMM] = obj;
+	
+	x = 20; 
 	obj = ui_create_button(ui_pct_screen, "PROG", button_large_width, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_PROG);
 	ui_change_button_color(obj, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
 	lv_obj_set_pos(obj, x, y); x += button_large_width + gap; ui_pct_keyboard[KEYBOARD_PROG] = obj;
@@ -182,7 +185,17 @@ void ui_pct_screen_init(void)
 	lv_timer_create(ui_pct_update_lines_timer, 500, NULL);
 }
 
-void ui_pct_update_label_text(int index, char* value)
+char *trim(char *s) {
+	char *ptr;
+	if (!s)
+		return NULL;   // handle NULL string
+	if (!*s)
+		return s;      // handle empty string
+	for (ptr = s + strlen(s) - 1; (ptr >= s) && isspace(*ptr); --ptr) ;
+	ptr[1] = '\0';
+	return s;
+}
+void UpdateLabelText(int index, char* value)
 {
 	//value = trim(value); //lvana: that is wrong , becasuse line sometimes includes space for example, "PWR1=     PWR2=     PWR2=     PWR4=     ",
 	if (index >= 5) return;
@@ -201,14 +214,14 @@ void ui_pct_update_label_text(int index, char* value)
 	//lv_label_set_text(ui_pct_label_lines[index], value); //lineLabels[index + 1].Text = secondLine;
 	ui_pct_is_refresh_line = true;
 }
-void ui_pct_update_label_color(int index, char* value)
+void UpdateLabelColor(int index, char* value)
 {
 	if (index >= 5) return;
 	if (!ui_pct_label_lines[index]) return;
 	uint32_t color = atoi(value);
 	lv_obj_set_style_text_color(ui_pct_label_lines[index], lv_color_hex(color), LV_PART_MAIN);
 }
-void ui_pct_update_button_text(int index, char* value)
+void UpdateButtonText(int index, char* value)
 {
 	if (index >= KEYBOARD_HOME) return;
 	if(!ui_pct_keyboard[index]) return;
@@ -216,7 +229,7 @@ void ui_pct_update_button_text(int index, char* value)
 	if (!label) return;
 	lv_label_set_text(label, value);
 }
-void ui_pct_update_button_color(int index, char* value)
+void UpdateButtonColor(int index, char* value)
 {
 	if (index >= KEYBOARD_HOME) return;
 	if (!ui_pct_keyboard[index]) return;

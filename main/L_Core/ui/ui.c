@@ -16,6 +16,7 @@
 #include "ui-settings.h"
 #include "ui-control.h"
 #include "ui-pct.h"
+#include "ui-pct01.h"
 #include "ui-comm.h"
 #include "ui-bluetooth.h"
 
@@ -136,6 +137,9 @@ void ui_event_title_button_cb(lv_event_t* e)
 		switch ((uint8_t)ui_current_screen)
 		{
 		case SCREEN_PCT:
+			ui_transform_screen(SCREEN_PCT_01);
+			break;
+		case SCREEN_PCT_01:
 			if (ble_run_mode == BLE_RUN_CLIENT)
 			{
 				ui_transform_screen(SCREEN_BLUETOOTH);
@@ -254,6 +258,11 @@ void ui_transform_screen(SCREEN_TYPE screen)
 		lv_obj_set_parent(keyboard, ui_pct_screen);
 		lv_obj_set_parent(msgbox, ui_pct_screen);
 		break;
+	case SCREEN_PCT_01:
+		lv_scr_load(ui_pct01_screen);
+		lv_obj_set_parent(keyboard, ui_pct_screen);
+		lv_obj_set_parent(msgbox, ui_pct_screen);
+		break;
 	case SCREEN_COMM:
 		lv_scr_load(ui_comm_screen);
 		lv_obj_set_parent(keyboard, ui_comm_screen);
@@ -308,6 +317,7 @@ void InitUI( void )
 	ui_settings_screen_init();
 	ui_control_screen_init();
 	ui_pct_screen_init();
+	ui_pct01_screen_init();
 	ui_comm_screen_init();
 	ui_ble_screen_init();
 
