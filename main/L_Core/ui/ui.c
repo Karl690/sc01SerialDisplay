@@ -25,6 +25,7 @@ LV_IMG_DECLARE(img_mark);
 lv_obj_t * keyboard;
 lv_obj_t* msgbox;
 lv_obj_t* msgbox_label;
+lv_obj_t* clear_obj;
 uint8_t ui_initialized = 0;
 char ui_temp_string[256];
 SCREEN_TYPE ui_current_screen = SCREEN_PCT;
@@ -131,6 +132,9 @@ void ui_event_title_button_cb(lv_event_t* e)
 		case SCREEN_COMM:
 			ui_comm_clear_log();
 			break;
+		case SCREEN_PCT_01:
+			ui_pct01_clear();
+			break;
 		}
 		break;
 	case UI_BTN_SWAP:
@@ -180,9 +184,9 @@ void ui_create_pct_title(lv_obj_t* parent)
 	int button_large_width = 90;
 	int button_h = 50;
 	int gap = 5;
-	
 	obj = ui_create_button(parent, "CLR", button_large_width, button_h, 2, &lv_font_montserrat_16, ui_event_title_button_cb, (void*)UI_BTN_CLEAR);
 	lv_obj_set_pos(obj, x += button_large_width + gap, 2);
+	clear_obj = obj;
 	
 	obj = ui_create_button(parent, LV_SYMBOL_REFRESH, button_w, button_h, 2, &lv_font_montserrat_16, ui_event_title_button_cb, (void*)UI_BTN_SWAP);
 	lv_obj_set_pos(obj, SCREEN_WIDTH - button_w - 5, 2);

@@ -338,21 +338,43 @@ void communication_process_rx_ble(BleDevice* device)
 				return;
 			case  13: 		return;//return char, just ignore
 				
-			case JOG_Z_TABLE_UP:    
+			case TOGGLE_DIAG_DISPLAY:   
+				if (ble_run_mode == BLE_RUN_SERVER)
+				{
+					communication_add_char_to_serial_buffer(&MasterCommPort->TxBuffer, WorkRxChar);
+				}
+				break;   
+				//if toggle on-off sending the embedded lcd text to the serial display (rawChar==11)
+			case DIAG_DISPLAY_CLEAR: 
+				if (ble_run_mode == BLE_RUN_SERVER)
+				{
+					communication_add_char_to_serial_buffer(&MasterCommPort->TxBuffer, WorkRxChar);
+				}
+				break; //clear Diag LCD lines buffer.
+			//case JOG_Z_TABLE_UP:    
 				//JogMotorZFlag = 1; break;   //if (rawChar==11)
 
-			case JOG_Z_TABLE_DOWN:  
+			//case JOG_Z_TABLE_DOWN:  
 				//JogMotorZFlag = -1; break;   //if (rawChar==12)
 
 			case REPETREL_COMM_WATCHDOG_CHAR:   // (rawChar==14)
 				//_repetrelCommWatchCount = REPETREL_COMM_WATCHDOG_START_VALUE;
 				break;
 
+				
 			case JOG_DISPLAYplus: 
 				//ShowNextDisplay(); 
+				if (ble_run_mode == BLE_RUN_SERVER)
+				{
+					communication_add_char_to_serial_buffer(&MasterCommPort->TxBuffer, WorkRxChar);
+				}
 				break;											// (rawChar==15)
 			case JOG_DISPLAYminus:	
 				//ShowPreviousDisplay(); 
+				if (ble_run_mode == BLE_RUN_SERVER)
+				{
+					communication_add_char_to_serial_buffer(&MasterCommPort->TxBuffer, WorkRxChar);
+				}
 				break;
 			case VARIABLE_RESET:   
 				// ClearSliceTimes(); ResetParseCounters(); 

@@ -121,11 +121,12 @@ enum KEYCODE
 	KEYBOARD_DIAG,
 	KEYBOARD_COMM,
 	KEYBOARD_HOME,
-	KEYBOARD_BACK
+	KEYBOARD_BACK,	
 };
 extern char ui_temp_string[];
 extern uint8_t ui_initialized;
 extern lv_obj_t * keyboard;
+extern lv_obj_t* clear_obj;
 void InitUI(void);
 
 lv_obj_t* ui_create_screen();

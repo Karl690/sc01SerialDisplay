@@ -20,6 +20,8 @@
 #define LF_CHAR                      10 // '\n'
 #define JOG_Z_TABLE_UP               11
 #define JOG_Z_TABLE_DOWN             12
+#define TOGGLE_DIAG_DISPLAY          11
+#define DIAG_DISPLAY_CLEAR			12
 #define CR_CHAR                      13 // '\r' (carriage return)
 #define REPETREL_COMM_WATCHDOG_CHAR  14
 #define JOG_DISPLAYplus  			 15
