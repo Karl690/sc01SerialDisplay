@@ -12,6 +12,9 @@
 lv_obj_t* ui_pct01_screen;
 lv_obj_t* ui_pct01_btn_prog;
 lv_obj_t* ui_pct01_xmt_lcd;
+lv_obj_t* ui_pct01_forward;
+lv_obj_t* ui_pct01_backward;
+
 lv_obj_t* ui_pct01_keyboard[KEYBOARD_BACK + 1];
 lv_obj_t* ui_pct01_label_lines[LCD_LINE_MAX_NUMBER];
 bool ui_pct01_is_refresh_line = false;
@@ -20,6 +23,7 @@ char ui_pct01_temp[256] = { 0 };
 uint8_t ui_pct01_diag_indicator = 0;
 void ui_pct01_clear_log()
 {
+	if (!ui_pct01_diag_indicator) return;
 	strcpy(ui_pct01_temp, KEYBOARD_CLEAR_STRING);
 	uint8_t len = strlen(ui_pct01_temp);
 	if (ble_run_mode == BLE_RUN_CLIENT) //client => server
@@ -41,8 +45,11 @@ void ui_pct01_event_button_cb(lv_event_t* e)
 	ui_pct01_temp[1] = 0;
 	switch (code)
 	{
-	case 0: ui_pct01_temp[0] = 16; break; //backward LCD
-	case 1: ui_pct01_temp[0] = 15; break; ////forward LCD
+	case 0: if (!ui_pct01_diag_indicator) return;
+		else ui_pct01_temp[0] = 16; 
+		break; //backward LCD
+	case 1: if (!ui_pct01_diag_indicator) return;
+		ui_pct01_temp[0] = 15; break; ////forward LCD
 	case 2:   ui_pct01_temp[0] = 11; break; //XMT LCD 
 	}
 	uint8_t len = strlen(ui_pct01_temp);
@@ -60,18 +67,19 @@ void ui_pct01_event_button_cb(lv_event_t* e)
 
 void ui_pct01_update_lines_timer(lv_timer_t * timer)
 {
-	if (ui_pct01_diag_indicator > 0)
+	if (ui_pct01_diag_indicator == 0) return;
+	ui_pct01_diag_indicator--;
+	if (ui_pct01_diag_indicator == 0)
 	{
-		ui_pct01_diag_indicator--;
-		if (ui_pct01_diag_indicator == 0)
-		{
-			ui_change_button_color(ui_pct01_xmt_lcd, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
-		}
-		else
-		{
-			ui_change_button_color(ui_pct01_xmt_lcd, UI_BUTTON_ACTIVE_BG_COLOR, UI_BUTTON_ACTIVE_FG_COLOR);
-		}
-		
+		ui_change_button_color(ui_pct01_forward, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
+		ui_change_button_color(ui_pct01_backward, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
+		ui_change_button_color(ui_pct01_xmt_lcd, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
+	}
+	else if (ui_pct01_diag_indicator == 3)
+	{
+		ui_change_button_color(ui_pct01_forward, UI_BUTTON_ACTIVE_BG_COLOR, UI_BUTTON_ACTIVE_FG_COLOR);
+		ui_change_button_color(ui_pct01_backward, UI_BUTTON_ACTIVE_BG_COLOR, UI_BUTTON_ACTIVE_FG_COLOR);
+		ui_change_button_color(ui_pct01_xmt_lcd, UI_BUTTON_ACTIVE_BG_COLOR, UI_BUTTON_ACTIVE_FG_COLOR);
 	}
 	 
 	if (!ui_pct01_is_refresh_line) return;
@@ -95,15 +103,20 @@ void ui_pct01_screen_init(void)
 	
 	int x = 20, y = 60;
 	
-	
 	x = 10; 
 	lv_obj_set_size(clear_obj, button_large_width, button_h);
 	lv_obj_set_pos(clear_obj, x, y); y += button_h + gap;
+	
 	obj = ui_create_button(ui_pct01_screen, "<<BACK", button_large_width, button_h, 2, font, ui_pct01_event_button_cb, (void*)0);
 	lv_obj_set_pos(obj, x, y); y += button_h + gap;
+	ui_pct01_backward = obj;
+	ui_change_button_color(obj, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
 	obj = ui_create_button(ui_pct01_screen, "FORWORD>>", button_large_width, button_h, 2, font, ui_pct01_event_button_cb, (void*)1); 
 	lv_obj_set_pos(obj, x, y); y += button_h + gap;
-	obj = ui_create_button(ui_pct01_screen, "XMT LCD", button_large_width, button_h, 2, font, ui_pct01_event_button_cb, (void*)2);
+	ui_pct01_forward = obj;
+	ui_change_button_color(obj, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
+	
+	obj = ui_create_button(ui_pct01_screen, "DIAG LCD", button_large_width, button_h, 2, font, ui_pct01_event_button_cb, (void*)2);
 	lv_obj_set_pos(obj, x, y); y += button_h + gap;
 	ui_pct01_xmt_lcd = obj;
 	ui_change_button_color(ui_pct01_xmt_lcd, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
