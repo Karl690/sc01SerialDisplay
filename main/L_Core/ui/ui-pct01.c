@@ -11,12 +11,13 @@
 
 lv_obj_t* ui_pct01_screen;
 lv_obj_t* ui_pct01_btn_prog;
+lv_obj_t* ui_pct01_xmt_lcd;
 lv_obj_t* ui_pct01_keyboard[KEYBOARD_BACK + 1];
 lv_obj_t* ui_pct01_label_lines[LCD_LINE_MAX_NUMBER];
 bool ui_pct01_is_refresh_line = false;
 char ui_pct01_lines[LCD_LINE_MAX_NUMBER][50] = { 0 };
 char ui_pct01_temp[256] = { 0 };
-
+uint8_t ui_pct01_diag_indicator = 0;
 void ui_pct01_clear_log()
 {
 	strcpy(ui_pct01_temp, KEYBOARD_CLEAR_STRING);
@@ -59,6 +60,20 @@ void ui_pct01_event_button_cb(lv_event_t* e)
 
 void ui_pct01_update_lines_timer(lv_timer_t * timer)
 {
+	if (ui_pct01_diag_indicator > 0)
+	{
+		ui_pct01_diag_indicator--;
+		if (ui_pct01_diag_indicator == 0)
+		{
+			ui_change_button_color(ui_pct01_xmt_lcd, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
+		}
+		else
+		{
+			ui_change_button_color(ui_pct01_xmt_lcd, UI_BUTTON_ACTIVE_BG_COLOR, UI_BUTTON_ACTIVE_FG_COLOR);
+		}
+		
+	}
+	 
 	if (!ui_pct01_is_refresh_line) return;
 	for (int i = 0; i < LCD_LINE_MAX_NUMBER; i++)
 		lv_label_set_text(ui_pct01_label_lines[i], ui_pct01_lines[i]);
@@ -90,6 +105,8 @@ void ui_pct01_screen_init(void)
 	lv_obj_set_pos(obj, x, y); y += button_h + gap;
 	obj = ui_create_button(ui_pct01_screen, "XMT LCD", button_large_width, button_h, 2, font, ui_pct01_event_button_cb, (void*)2);
 	lv_obj_set_pos(obj, x, y); y += button_h + gap;
+	ui_pct01_xmt_lcd = obj;
+	ui_change_button_color(ui_pct01_xmt_lcd, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
 	
 	x = 150; y = 10;
 	lv_obj_t* panel = lv_obj_create(ui_pct01_screen);
@@ -104,7 +121,7 @@ void ui_pct01_screen_init(void)
 	x = 0;
 	for (int i = 0; i < LCD_LINE_MAX_NUMBER; i++)
 	{
-		obj = ui_create_label(panel, "aaa", &mono_regualr_14); lv_obj_set_pos(obj, x, y); 
+		obj = ui_create_label(panel, "", &mono_regualr_14); lv_obj_set_pos(obj, x, y); 
 		y += 18;	
 		ui_pct01_label_lines[i] = obj;
 	}
@@ -112,7 +129,7 @@ void ui_pct01_screen_init(void)
 }
 void ui_pct01_update_label_text(int index, char* value)
 {
-
+	ui_pct01_diag_indicator = 4;
 	if (index >= LCD_LINE_MAX_NUMBER) return;
 	if (!ui_pct01_label_lines[index]) return;
 	
@@ -177,4 +194,7 @@ void ui_pct01_clear()
 		}
 		communication_add_char_to_serial_buffer(&MasterCommPort->TxBuffer, ui_pct01_temp[0]);
 	}
+	
+	for (int i = 0; i < LCD_LINE_MAX_NUMBER; i++)
+		lv_label_set_text(ui_pct01_label_lines[i], "");
 }
