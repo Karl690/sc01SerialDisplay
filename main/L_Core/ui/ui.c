@@ -165,7 +165,7 @@ void ui_event_title_button_cb(lv_event_t* e)
 		break;
 	}
 }
-void ui_create_pct_title(lv_obj_t* parent)
+void ui_create_pct_title(lv_obj_t* parent, bool isPCT)
 {	
 	lv_obj_t* logbutton = lv_btn_create(parent);
 	lv_obj_add_flag(logbutton, LV_OBJ_FLAG_SCROLL_ON_FOCUS); /// Flags
@@ -177,19 +177,19 @@ void ui_create_pct_title(lv_obj_t* parent)
 	lv_img_set_zoom(obj, 100);
 	lv_obj_set_pos(obj, -65, -45);
 	lv_obj_add_event_cb(logbutton, ui_event_title_button_cb, LV_EVENT_CLICKED, (void*)UI_BTN_HOME);		
-	lv_obj_set_pos(logbutton, 20, 5);
+	lv_obj_set_pos(logbutton, 20, isPCT ? 100: 5);
 	
-	int x = 20, y = 70;
+	int x = 20, y = isPCT? 100: 70;
 	int button_w = 60;
 	int button_large_width = 90;
 	int button_h = 50;
 	int gap = 5;
 	obj = ui_create_button(parent, "CLR", button_large_width, button_h, 2, &lv_font_montserrat_16, ui_event_title_button_cb, (void*)UI_BTN_CLEAR);
-	lv_obj_set_pos(obj, x += button_large_width + gap, 2);
+	lv_obj_set_pos(obj, x += button_large_width + gap, isPCT?100: 2);
 	clear_obj = obj;
 	
 	obj = ui_create_button(parent, LV_SYMBOL_REFRESH, button_w, button_h, 2, &lv_font_montserrat_16, ui_event_title_button_cb, (void*)UI_BTN_SWAP);
-	lv_obj_set_pos(obj, SCREEN_WIDTH - button_w - 5, 2);
+	lv_obj_set_pos(obj, SCREEN_WIDTH - button_w - 5, isPCT ? 100 : 2);
 }
 
 

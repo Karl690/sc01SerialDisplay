@@ -93,7 +93,7 @@ void ui_pct01_screen_init(void)
 	const lv_font_t* font = &lv_font_montserrat_16;
 	ui_pct01_screen = ui_create_screen();	
 	
-	ui_create_pct_title(ui_pct01_screen);
+	ui_create_pct_title(ui_pct01_screen, false);
 	
 	lv_obj_t* obj;
 	

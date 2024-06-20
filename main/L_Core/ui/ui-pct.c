@@ -97,6 +97,12 @@ void ui_pct_update_lines_timer(lv_timer_t * timer)
 	ui_pct_is_refresh_line = false;
 }
 
+void label_event_handler(lv_event_t * e) {
+	lv_event_code_t code = lv_event_get_code(e);
+	if (code == LV_EVENT_CLICKED) 
+		ui_transform_screen(SCREEN_HOME);
+}
+
 void ui_pct_screen_init(void)
 {	
 	const lv_font_t* font = &lv_font_montserrat_16;
@@ -104,10 +110,10 @@ void ui_pct_screen_init(void)
 	
 	
 	
-	ui_create_pct_title(ui_pct_screen);
+	ui_create_pct_title(ui_pct_screen, true);
 	
 	lv_obj_t* obj = ui_create_label(ui_pct_screen, "0", &lv_font_montserrat_20);	
-	lv_obj_set_pos(obj, 230, 15);
+	lv_obj_set_pos(obj, 230, 115);
 	ui_pct_line_4 = obj;
 	//obj = ui_create_label(ui_pct_screen, SYSTEMVERSION, &mono_regualr_16);	
 	//lv_obj_set_pos(obj, 100, 40);
@@ -118,7 +124,28 @@ void ui_pct_screen_init(void)
 	int button_h = 50;
 	int gap = 5;
 	
-	int x = 20, y = 60;
+	int x = 20, y = 2;
+	x = 20; 
+	obj = lv_btn_create(ui_pct_screen);
+	lv_obj_set_size(obj, SCREEN_WIDTH, 100);
+	lv_obj_set_pos(obj, x, y);
+	lv_obj_set_style_bg_color(obj, lv_color_hex(0x0), LV_PART_MAIN | LV_STATE_DEFAULT);
+	lv_obj_add_event_cb(obj, ui_event_title_button_cb, LV_EVENT_CLICKED, (void*)UI_BTN_SWAP); 
+	
+	obj = ui_create_label(ui_pct_screen, "01234567890012345678900123456789001234567890", &mono_regualr_20); lv_obj_set_pos(obj, x, y); 
+	ui_pct_line_0 = obj;
+	
+	x = 20; y += 25;
+	obj = ui_create_label(ui_pct_screen, "01234567890012345678900123456789001234567890", &mono_regualr_20); lv_obj_set_pos(obj, x, y);
+	ui_pct_line_1 = obj;
+	x = 20; y += 25;
+	obj = ui_create_label(ui_pct_screen, "01234567890012345678900123456789001234567890", &mono_regualr_20); lv_obj_set_pos(obj, x, y);
+	ui_pct_line_2 = obj;
+	x = 20; y += 25;
+	obj = ui_create_label(ui_pct_screen, "01234567890012345678900123456789001234567890", &mono_regualr_20); lv_obj_set_pos(obj, x, y);
+	ui_pct_line_3 = obj;
+	y += 25 + button_h;
+	
 	obj = ui_create_button(ui_pct_screen, "PROG", button_large_width, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_PROG);
 	ui_change_button_color(obj, UI_BUTTON_DISABLE_BG_COLOR, UI_BUTTON_DISABLE_FG_COLOR);
 	lv_obj_set_pos(obj, x, y); x += button_large_width + gap; ui_pct_keyboard[KEYBOARD_PROG] = obj;
@@ -161,18 +188,7 @@ void ui_pct_screen_init(void)
 	obj = ui_create_button(ui_pct_screen, "0", button_w, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_0);
 	lv_obj_set_pos(obj, x, y); x += button_w + gap; ui_pct_keyboard[KEYBOARD_0] = obj;
 	
-	x = 20; y += 55;
-	obj = ui_create_label(ui_pct_screen, "01234567890012345678900123456789001234567890", &mono_regualr_20); lv_obj_set_pos(obj, x, y); 
-	ui_pct_line_0 = obj;
-	x = 20; y += 25;
-	obj = ui_create_label(ui_pct_screen, "01234567890012345678900123456789001234567890", &mono_regualr_20); lv_obj_set_pos(obj, x, y);
-	ui_pct_line_1 = obj;
-	x = 20; y += 25;
-	obj = ui_create_label(ui_pct_screen, "01234567890012345678900123456789001234567890", &mono_regualr_20); lv_obj_set_pos(obj, x, y);
-	ui_pct_line_2 = obj;
-	x = 20; y += 25;
-	obj = ui_create_label(ui_pct_screen, "01234567890012345678900123456789001234567890", &mono_regualr_20); lv_obj_set_pos(obj, x, y);
-	ui_pct_line_3 = obj;	
+		
 	
 	ui_pct_label_lines[0] = ui_pct_line_0;
 	ui_pct_label_lines[1] = ui_pct_line_1;

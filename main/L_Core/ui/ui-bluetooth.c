@@ -164,7 +164,7 @@ void ui_ble_screen_init()
 {
 	lv_obj_t* obj;
 	ui_ble_screen = ui_create_screen();	
-	ui_create_pct_title(ui_ble_screen);
+	ui_create_pct_title(ui_ble_screen, false);
 	
 	obj = ui_create_label(ui_ble_screen, (char*)"BLUETOOTH", &mono_bold_28);	
 	lv_obj_set_pos(obj, 250, 7);

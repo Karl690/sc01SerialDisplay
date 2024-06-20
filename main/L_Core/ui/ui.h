@@ -145,4 +145,5 @@ void ui_transform_screen(SCREEN_TYPE screen);
 void ui_show_messagebox(MESSAGEBOX_TYPE type, const char* msg, uint16_t delay);
 void ui_event_go_home_cb(lv_event_t* e);
 void ui_event_edit_cb(lv_event_t* e);
-void ui_create_pct_title(lv_obj_t* parent);
+void ui_create_pct_title(lv_obj_t* parent, bool isPCT);
+void ui_event_title_button_cb(lv_event_t* e);

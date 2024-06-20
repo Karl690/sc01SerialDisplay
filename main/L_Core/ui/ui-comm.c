@@ -113,7 +113,7 @@ void ui_comm_screen_init(void)
 	ui_comm_screen = ui_create_screen();	
 	
 	
-	ui_create_pct_title(ui_comm_screen);
+	ui_create_pct_title(ui_comm_screen, false);
 	
 	int x = 20, y = 70;
 	int button_w = 60;
