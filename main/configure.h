@@ -47,9 +47,16 @@ typedef struct
 } OPC_CONFIG;
 typedef struct 
 {
+	uint8_t rx_pin;	
+	uint8_t tx_pin;
+	uint32_t baud;
+} SERIAL_CONFIG;
+typedef struct 
+{
 	uint8_t initialized;
 	WIFI_CONFIG wifi;
 	BLUETOOTH_CONFIG bluetooth;
 	OPC_CONFIG opc;
 	SDCARD_CONFIG sdcard;
+	SERIAL_CONFIG serial;
 }SYSTEMCONFIG;

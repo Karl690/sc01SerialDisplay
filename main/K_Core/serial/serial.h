@@ -30,7 +30,7 @@ extern COMPORT* MasterComPort;
 extern uint8_t serial_uart1_last_read_buffer[256];
 extern uint8_t serial_uart2_last_read_buffer[256];
 void serial_init();
-
+void serial_uart_update_config(uint8_t port, int tx_pin, int rx_pin, int baud);
 bool serial_uart_write_byte(COMPORT* comport, char byte);
 void serial_add_char_to_buffer(ComBuffer *targetBuffer, uint8_t RawChar);
 void serial_add_string_to_buffer(ComBuffer *targetBuffer, char* SourceString);

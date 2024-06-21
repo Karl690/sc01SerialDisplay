@@ -241,7 +241,7 @@ void ui_create_messagebox()
 	msgbox = lv_obj_create(lv_scr_act());
 	lv_obj_clear_flag(msgbox, LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_CLICKABLE); /// Flags
 	lv_obj_set_style_border_width(msgbox, 0, LV_PART_MAIN);
-	lv_obj_set_style_bg_opa(msgbox, 128, LV_PART_MAIN);
+	lv_obj_set_style_bg_opa(msgbox, 200, LV_PART_MAIN);
 	lv_obj_set_size(msgbox, LV_PCT(60), 50);
 	msgbox_label = ui_create_label(msgbox, (char*)"", &font_en_16);
 	lv_obj_center(msgbox);	
@@ -313,7 +313,6 @@ void ui_event_edit_cb(lv_event_t* e)
 			lv_keyboard_set_textarea(keyboard, obj);
 			lv_obj_clear_flag(keyboard, LV_OBJ_FLAG_HIDDEN);
 		}
-		
 	}	
 	else if (code == LV_EVENT_READY)
 	{

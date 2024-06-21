@@ -55,7 +55,10 @@ char* parseValue(char* line)
 }
 bool load_configuration()
 {
-	if (!storage_nvs_get_blob(NVS_KEY_CONFIG, &systemconfig)) return false;
+	storage_nvs_get_blob(NVS_KEY_CONFIG, &systemconfig);
+	if (!systemconfig.serial.baud) systemconfig.serial.baud = SERIAL_BAUD_RATE;
+	if (!systemconfig.serial.rx_pin) systemconfig.serial.rx_pin = SERIAL_UART1_RXD_PIN;
+	if (!systemconfig.serial.tx_pin) systemconfig.serial.tx_pin = SERIAL_UART1_TXD_PIN;
 	return true;
 }
 bool load_configu_from_ssd() {

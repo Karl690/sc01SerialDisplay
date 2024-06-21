@@ -27,10 +27,11 @@ COMPORT ComUart1, ComUart2;
 COMPORT* MasterComPort = &ComUart1;
 uint8_t serial_uart1_last_read_buffer[256];
 uint8_t serial_uart2_last_read_buffer[256];
-void serial_uart_init(uint8_t port, int tx_pin, int rx_pin, int rts_pin, int cts_pin, bool is485)
+
+void serial_uart_init(uint8_t port, int tx_pin, int rx_pin, int baud, int rts_pin, int cts_pin, bool is485)
 {
 	const uart_config_t uart_config = {
-		.baud_rate = SERIAL_BAUD_RATE,
+		.baud_rate = baud,
 		.data_bits = UART_DATA_8_BITS,
 		.parity = UART_PARITY_DISABLE,
 		.stop_bits = UART_STOP_BITS_1,
@@ -49,6 +50,20 @@ void serial_uart_init(uint8_t port, int tx_pin, int rx_pin, int rts_pin, int cts
 	}
 }
 
+
+void serial_uart_update_config(uint8_t port, int tx_pin, int rx_pin, int baud)
+{
+	const uart_config_t uart_config = {
+		.baud_rate = baud,
+		.data_bits = UART_DATA_8_BITS,
+		.parity = UART_PARITY_DISABLE,
+		.stop_bits = UART_STOP_BITS_1,
+		.flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
+		.source_clk = UART_SCLK_APB,
+	};
+	uart_param_config(port, &uart_config);
+	uart_set_pin(port, tx_pin, rx_pin, SERIAL_UART1_RTS_PIN, SERIAL_UART1_CTS_PIN);
+}
 bool serial_uart_write_byte(COMPORT* comport, char byte)
 {
 	if (uart_write_bytes(comport->uart_id, &byte, 1) != 1) {
@@ -105,7 +120,7 @@ void serial_init()
 {
 	pthread_t uart1_thread, uart2_thread;
 	// initialize uart devices
-	serial_uart_init(UART_NUM_1, SERIAL_UART1_TXD_PIN, SERIAL_UART1_RXD_PIN, SERIAL_UART1_RTS_PIN, SERIAL_UART1_CTS_PIN, false);
+	serial_uart_init(UART_NUM_1, systemconfig.serial.tx_pin, systemconfig.serial.rx_pin, systemconfig.serial.baud, SERIAL_UART1_RTS_PIN, SERIAL_UART1_CTS_PIN, false);
 	//serial_uart_init(UART_NUM_2, SERIAL_UART2_TXD_PIN, SERIAL_UART2_RXD_PIN, SERIAL_UART2_RTS_PIN, SERIAL_UART2_CTS_PIN, false);
 	// initialize buffers
 	communication_buffers_serial_init(UART_NUM_1, &ComUart1, serial_uart1_rx_buffer, serial_uart1_rx_urgent_buffer, serial_uart1_tx_buffer);
