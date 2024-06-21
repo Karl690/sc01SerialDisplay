@@ -51,13 +51,13 @@ void ui_sdcard_screen_init(void)
 	
 	ui_sdcard_folders_panel = lv_obj_create(ui_sdcard_screen);
 	lv_obj_set_style_pad_all(ui_sdcard_folders_panel, 2, LV_PART_MAIN);
-	lv_obj_set_size(ui_sdcard_folders_panel, 210, 285);
-	lv_obj_set_pos(ui_sdcard_folders_panel, 3, 33);
+	lv_obj_set_size(ui_sdcard_folders_panel, 210, 275);
+	lv_obj_set_pos(ui_sdcard_folders_panel, 3, 45);
 	
 	ui_sdcard_files_panel = lv_obj_create(ui_sdcard_screen);
 	lv_obj_set_style_pad_all(ui_sdcard_files_panel, 2, LV_PART_MAIN);
-	lv_obj_set_size(ui_sdcard_files_panel, 261, 285);
-	lv_obj_set_pos(ui_sdcard_files_panel, 216, 33);
+	lv_obj_set_size(ui_sdcard_files_panel, 261, 275);
+	lv_obj_set_pos(ui_sdcard_files_panel, 216, 45);
 }
 
 void ui_sdcard_add_directory(const char* path, uint16_t index)

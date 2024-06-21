@@ -68,8 +68,8 @@ void ui_settings_event_submenu_cb(lv_event_t* e)
 	lv_obj_t * target = lv_event_get_target(e);	
 	SETTINGS_SUBMENU_TYPE type = (SETTINGS_SUBMENU_TYPE)(int) e->user_data;
 	if (settings_active_menu  == target) return;
-	if (settings_active_menu) lv_obj_set_style_bg_color(settings_active_menu, lv_color_hex(UI_MENU_NORMAL_ITEM_COLOR), LV_PART_MAIN);
-	lv_obj_set_style_bg_color(target, lv_color_hex(UI_MENU_ACTIVE_ITEM_COLOR), LV_PART_MAIN);
+	if (settings_active_menu) lv_obj_set_style_bg_color(settings_active_menu, lv_color_hex(UI_BUTTON_NORMAL_BG_COLOR), LV_PART_MAIN);
+	lv_obj_set_style_bg_color(target, lv_color_hex(UI_BUTTON_ACTIVE_BG_COLOR), LV_PART_MAIN);
 	
 	if (settings_active_page) lv_obj_add_flag(settings_active_page, LV_OBJ_FLAG_HIDDEN);
 	switch (type)
@@ -191,7 +191,8 @@ void ui_settings_event_save_cb(lv_event_t* e)
 	}
 	else
 	{
-		ui_show_messagebox(MESSAGEBOX_INFO, "Successful save configuration. After 5s, reboot.", 5000);
+		ui_show_messagebox(MESSAGEBOX_INFO,
+			"Settings Saved Succesfully, Rebooting NOW.", 5000);
 		
 		//serial_uart_update_config(UART_NUM_1, systemconfig.serial.tx_pin, systemconfig.serial.rx_pin, systemconfig.serial.baud);
 		lv_timer_create(ui_settings_reboot_timer_cb, 5000, NULL);
@@ -210,8 +211,8 @@ void ui_settings_update_data_timer_cb(lv_timer_t * timer)
 void ui_settings_bluetooth_page_init()
 {
 	ui_settings_bluetooth_page = lv_obj_create(ui_settings_screen);
-	lv_obj_set_size(ui_settings_bluetooth_page, 375, 256);//480-105
-	lv_obj_set_pos(ui_settings_bluetooth_page, 102, 32); 
+	lv_obj_set_size(ui_settings_bluetooth_page, 375, 235);//480-105
+	lv_obj_set_pos(ui_settings_bluetooth_page, 102, 45); 
 	lv_obj_set_style_pad_all(ui_settings_bluetooth_page, 10, LV_PART_MAIN);
 	lv_obj_t* obj = ui_create_label(ui_settings_bluetooth_page, "Bluetooth", &lv_font_montserrat_20);
 	lv_obj_set_align(obj, LV_ALIGN_TOP_MID);
@@ -241,8 +242,8 @@ void ui_settings_bluetooth_page_init()
 void ui_settings_wifi_page_init()
 {
 	ui_settings_wifi_page = lv_obj_create(ui_settings_screen);
-	lv_obj_set_size(ui_settings_wifi_page, 375, 256); //480-105
-	lv_obj_set_pos(ui_settings_wifi_page, 102, 32); 
+	lv_obj_set_size(ui_settings_wifi_page, 375, 235); //480-105
+	lv_obj_set_pos(ui_settings_wifi_page, 102, 45); 
 	lv_obj_set_style_pad_all(ui_settings_wifi_page, 10, LV_PART_MAIN);
 	lv_obj_t* obj = ui_create_label(ui_settings_wifi_page, "WIFI", &lv_font_montserrat_20);
 	lv_obj_set_align(obj, LV_ALIGN_TOP_MID);
@@ -320,8 +321,8 @@ void ui_settings_wifi_page_init()
 void ui_settings_opc_page_init()
 {
 	ui_settings_opc_page = lv_obj_create(ui_settings_screen);
-	lv_obj_set_size(ui_settings_opc_page, 375, 256); //480-105
-	lv_obj_set_pos(ui_settings_opc_page, 102, 32); 
+	lv_obj_set_size(ui_settings_opc_page, 375, 235); //480-105
+	lv_obj_set_pos(ui_settings_opc_page, 102, 45); 
 	lv_obj_set_style_pad_all(ui_settings_opc_page, 10, LV_PART_MAIN);
 	lv_obj_t* obj = ui_create_label(ui_settings_opc_page, "OPC", &lv_font_montserrat_20);
 	lv_obj_set_align(obj, LV_ALIGN_TOP_MID);
@@ -377,8 +378,8 @@ void ui_settings_opc_page_init()
 void ui_settings_sdcard_page_init()
 {
 	ui_settings_sdcard_page = lv_obj_create(ui_settings_screen);
-	lv_obj_set_size(ui_settings_sdcard_page, 375, 256); //480-105
-	lv_obj_set_pos(ui_settings_sdcard_page, 102, 32); 
+	lv_obj_set_size(ui_settings_sdcard_page, 375, 235); //480-105
+	lv_obj_set_pos(ui_settings_sdcard_page, 102, 45); 
 	lv_obj_set_style_pad_all(ui_settings_sdcard_page, 10, LV_PART_MAIN);
 	lv_obj_t* obj = ui_create_label(ui_settings_sdcard_page, "SD Card", &lv_font_montserrat_20);
 	lv_obj_set_align(obj, LV_ALIGN_TOP_MID);
@@ -409,8 +410,8 @@ void ui_settings_serial_page_init()
 {
 	char szpins[100] = "GPIO_10\nGPIO_11\nGPIO_12\nGPIO_13\nGPIO_14\nGPIO_21";
 	ui_settings_serial_page = lv_obj_create(ui_settings_screen);
-	lv_obj_set_size(ui_settings_serial_page, 375, 256); //480-105
-	lv_obj_set_pos(ui_settings_serial_page, 102, 32);
+	lv_obj_set_size(ui_settings_serial_page, 375, 235); //480-105
+	lv_obj_set_pos(ui_settings_serial_page, 102, 45);
 	lv_obj_set_style_pad_all(ui_settings_serial_page, 10, LV_PART_MAIN);
 	lv_obj_t* obj = ui_create_label(ui_settings_serial_page, "Serial", &lv_font_montserrat_20);
 	lv_obj_set_align(obj, LV_ALIGN_TOP_MID);
@@ -461,8 +462,8 @@ void ui_settings_serial_page_init()
 void ui_settings_system_page_init()
 {
 	ui_settings_system_page = lv_obj_create(ui_settings_screen);
-	lv_obj_set_size(ui_settings_system_page, 375, 256); //480-105
-	lv_obj_set_pos(ui_settings_system_page, 102, 32); 
+	lv_obj_set_size(ui_settings_system_page, 375, 235); //480-105
+	lv_obj_set_pos(ui_settings_system_page, 102, 45); 
 	lv_obj_set_style_pad_all(ui_settings_system_page, 10, LV_PART_MAIN);
 	lv_obj_t* obj = ui_create_label(ui_settings_system_page, "SYSTEM", &lv_font_montserrat_20);
 	lv_obj_set_align(obj, LV_ALIGN_TOP_MID);
@@ -552,14 +553,15 @@ void ui_settings_screen_init()
 	
 	lv_obj_t* submenu = lv_obj_create(ui_settings_screen);
 	lv_obj_clear_flag(submenu, LV_OBJ_FLAG_SCROLLABLE); /// Flags
-	lv_obj_set_size(submenu, 100, 290);
-	lv_obj_set_pos(submenu, 0, 30);
+	lv_obj_set_size(submenu, 100, 275);
+	lv_obj_set_pos(submenu, 0, 45);
 	lv_obj_set_style_radius(submenu, 0, LV_PART_MAIN);
 	lv_obj_set_style_pad_all(submenu, 2, LV_PART_MAIN);
 	
 	int y = 2, step = 35;
 	lv_obj_t* obj = ui_create_button(submenu, "Bluetooth", LV_PCT(100), 30, 3, &lv_font_montserrat_14, ui_settings_event_submenu_cb, (void*)SETTINGS_SUBMENU_BLUETOOTH);
 	lv_obj_set_user_data(obj, (void*)SETTINGS_SUBMENU_BLUETOOTH);
+	lv_obj_set_style_bg_color(obj, lv_color_hex(UI_BUTTON_ACTIVE_BG_COLOR), LV_PART_MAIN);
 	lv_obj_set_pos(obj, 0, y);
 	settings_active_menu = obj;
 	obj = ui_create_button(submenu, "WIFI", LV_PCT(100), 30, 3, &lv_font_montserrat_14, ui_settings_event_submenu_cb, (void*)SETTINGS_SUBMENU_WIFI);
@@ -593,10 +595,10 @@ void ui_settings_screen_init()
 	ui_settings_system_page_init();
 	lv_obj_add_flag(ui_settings_system_page, LV_OBJ_FLAG_HIDDEN);
 	
-	obj = ui_create_button(ui_settings_screen, "Save & Reboot", 133, 24, 3, &lv_font_montserrat_14, ui_settings_event_save_cb, NULL);
-	lv_obj_set_pos(obj, 102, 292);
-	obj = ui_create_button(ui_settings_screen, "Load", 239, 24, 3, &lv_font_montserrat_14, ui_settings_event_load_cb, NULL);
-	lv_obj_set_pos(obj, 238, 292);
+	obj = ui_create_button(ui_settings_screen, "Save & Reboot", 133, 35, 3, &lv_font_montserrat_14, ui_settings_event_save_cb, NULL);
+	lv_obj_set_pos(obj, 102, 285);
+	obj = ui_create_button(ui_settings_screen, "Load", 239, 35, 3, &lv_font_montserrat_14, ui_settings_event_load_cb, NULL);
+	lv_obj_set_pos(obj, 238, 285);
 	
 	ui_settings_update_configuratiion();
 	ui_settings_initialized = true;
