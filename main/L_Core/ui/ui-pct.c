@@ -132,17 +132,17 @@ void ui_pct_screen_init(void)
 	lv_obj_set_style_bg_color(obj, lv_color_hex(0x0), LV_PART_MAIN | LV_STATE_DEFAULT);
 	lv_obj_add_event_cb(obj, ui_event_title_button_cb, LV_EVENT_CLICKED, (void*)UI_BTN_SWAP); 
 	
-	obj = ui_create_label(ui_pct_screen, "01234567890012345678900123456789001234567890", &mono_regualr_20); lv_obj_set_pos(obj, x, y); 
+	obj = ui_create_label(ui_pct_screen, "0123456789012345678901234567890123456789012345", &mono_regualr_20); lv_obj_set_pos(obj, x, y); 
 	ui_pct_line_0 = obj;
 	
 	x = 20; y += 25;
-	obj = ui_create_label(ui_pct_screen, "01234567890012345678900123456789001234567890", &mono_regualr_20); lv_obj_set_pos(obj, x, y);
+	obj = ui_create_label(ui_pct_screen, "0123456789012345678901234567890123456789012345", &mono_regualr_20); lv_obj_set_pos(obj, x, y);
 	ui_pct_line_1 = obj;
 	x = 20; y += 25;
-	obj = ui_create_label(ui_pct_screen, "01234567890012345678900123456789001234567890", &mono_regualr_20); lv_obj_set_pos(obj, x, y);
+	obj = ui_create_label(ui_pct_screen, "0123456789012345678901234567890123456789012345", &mono_regualr_20); lv_obj_set_pos(obj, x, y);
 	ui_pct_line_2 = obj;
 	x = 20; y += 25;
-	obj = ui_create_label(ui_pct_screen, "01234567890012345678900123456789001234567890", &mono_regualr_20); lv_obj_set_pos(obj, x, y);
+	obj = ui_create_label(ui_pct_screen, "0123456789012345678901234567890123456789012345", &mono_regualr_20); lv_obj_set_pos(obj, x, y);
 	ui_pct_line_3 = obj;
 	y += 25 + button_h;
 	
@@ -204,14 +204,14 @@ void ui_pct_update_label_text(int index, char* value)
 	if (index >= 5) return;
 	if (!ui_pct_label_lines[index]) return;
 	int len = strlen(value);
-	if (len > 40 && value[40] != '\n') // we need to consider the case Line 5, it should be less than 40 byte
+	if (len > 45 && value[45] != '\n') // we need to consider the case Line 5, it should be less than 40 byte
 	{
 		//double line send, so split and update consecutive lines
 		//secondLine = line.Substring(40); //now second line has text
 		//line = line.Substring(0, 40);
-		strncpy(ui_pct_lines[index+1], value + 40, 40);
+		strncpy(ui_pct_lines[index+1], value + 45, 45);
 		// lv_label_set_text(ui_pct_label_lines[index+1], value + 40); //lineLabels[index + 1].Text = secondLine;
-		value[40] = '\0'; //end the first line
+		value[45] = '\0'; //end the first line
 	}
 	strcpy(ui_pct_lines[index], value); //lvana: we do not update ui directly because it is called in task manager 's loop
 	//lv_label_set_text(ui_pct_label_lines[index], value); //lineLabels[index + 1].Text = secondLine;
