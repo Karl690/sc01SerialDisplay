@@ -137,7 +137,7 @@ void communication_process_rx_serial(COMPORT* WorkingComPort)
 		SourceBuff->Tail++; //point to the next character
 		SourceBuff->Tail &= (SourceBuff->Buffer_Size - 1); //circular que with even hex size....
 
-		if (WorkRxChar  > 0x19 && WorkRxChar <= 0x7F)
+		if ((WorkRxChar  > 0x19 && WorkRxChar <= 0x7F) || WorkRxChar == '\r')
 		{
 			//normal ascii character processing, below 20 hex are special control characters
 			//communication_add_char_to_serial_buffer(TargetBuff, WorkRxChar);
@@ -218,7 +218,7 @@ void communication_process_rx_serial(COMPORT* WorkingComPort)
 				WorkingComPort->UrgentFlag = 0; 
 				WorkingComPort->CommandLineIdx = 0;				
 				return;
-			case  13: 		return;//return char, just ignore
+			//case  13: 		return;//return char, just ignore
 				
 			case JOG_Z_TABLE_UP:    
 				//JogMotorZFlag = 1; break;   //if (rawChar==11)

@@ -204,17 +204,23 @@ void ui_pct_update_label_text(int index, char* value)
 	if (index >= 5) return;
 	if (!ui_pct_label_lines[index]) return;
 	int len = strlen(value);
-	if (len > 45 && value[45] != '\n') // we need to consider the case Line 5, it should be less than 40 byte
+	memset(ui_temp_string, 0, 256);
+	char* temp = ui_temp_string;
+	for (int i = 0; i < len; i++)
 	{
-		//double line send, so split and update consecutive lines
-		//secondLine = line.Substring(40); //now second line has text
-		//line = line.Substring(0, 40);
-		strncpy(ui_pct_lines[index+1], value + 45, 45);
-		// lv_label_set_text(ui_pct_label_lines[index+1], value + 40); //lineLabels[index + 1].Text = secondLine;
-		value[45] = '\0'; //end the first line
+		if (value[i] == '\r')
+		{
+			strcpy(ui_pct_lines[index], ui_temp_string);
+			memset(ui_temp_string, 0, 256);
+			temp = ui_temp_string;
+			if (index >= 5) break;
+			index++;
+			continue;
+		}
+		*temp = value[i];
+		temp++;
 	}
-	strcpy(ui_pct_lines[index], value); //lvana: we do not update ui directly because it is called in task manager 's loop
-	//lv_label_set_text(ui_pct_label_lines[index], value); //lineLabels[index + 1].Text = secondLine;
+	strcpy(ui_pct_lines[index], ui_temp_string);
 	ui_pct_is_refresh_line = true;
 }
 void ui_pct_update_label_color(int index, char* value)
