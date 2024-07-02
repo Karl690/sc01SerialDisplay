@@ -18,7 +18,7 @@ lv_obj_t* ui_pct_btn_prog;
 lv_obj_t* ui_pct_keyboard[KEYBOARD_BACK+1];
 lv_obj_t* ui_pct_label_lines[5];
 bool ui_pct_is_refresh_line = false;
-char ui_pct_lines[5][50] = { 0 };
+char ui_pct_lines[5][46] = { 0 };
 char ui_pct_temp[256] = { 0 };
 
 void ui_pct_clear_log()
@@ -201,26 +201,19 @@ void ui_pct_screen_init(void)
 void ui_pct_update_label_text(int index, char* value)
 {
 	//value = trim(value); //lvana: that is wrong , becasuse line sometimes includes space for example, "PWR1=     PWR2=     PWR2=     PWR4=     ",
-	if (index >= 5) return;
+	if (index > 4) return;
 	if (!ui_pct_label_lines[index]) return;
 	int len = strlen(value);
-	memset(ui_temp_string, 0, 256);
-	char* temp = ui_temp_string;
-	for (int i = 0; i < len; i++)
+	int lineLength = 45;
+	for (int i = 0; i < len; i+= lineLength)
 	{
-		if (value[i] == '\r')
-		{
-			strcpy(ui_pct_lines[index], ui_temp_string);
-			memset(ui_temp_string, 0, 256);
-			temp = ui_temp_string;
-			if (index >= 5) break;
-			index++;
-			continue;
-		}
-		*temp = value[i];
-		temp++;
+		if (index > 4) break;
+		int sublen = len - i;
+		if (sublen >= lineLength) sublen = lineLength; 
+		strncpy(ui_pct_lines[index], value+i, sublen);
+		index++;
+		
 	}
-	strcpy(ui_pct_lines[index], ui_temp_string);
 	ui_pct_is_refresh_line = true;
 }
 void ui_pct_update_label_color(int index, char* value)
