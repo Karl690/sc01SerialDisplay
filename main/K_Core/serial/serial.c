@@ -48,6 +48,9 @@ void serial_uart_init(uint8_t port, int tx_pin, int rx_pin, int baud, int rts_pi
 		// Set RS485 half duplex mode	
 		ESP_ERROR_CHECK(uart_set_mode(port, UART_MODE_RS485_HALF_DUPLEX));
 	}
+	// Enable UART DMA
+	uart_set_mode(port, UART_MODE_UART);
+	
 }
 
 
@@ -78,15 +81,20 @@ bool serial_uart_write_byte(COMPORT* comport, char byte)
 	return true;
 }
 
-void* serial_uart1_read_task(void* param)
+void serial_uart1_read_task(void* param)
 {
-	uint8_t buffer[SERIAL_RX_BUFFER_SIZE];
+	uint8_t buffer[RX_BUF_SIZE];
 	while (1)
 	{
-		int len = uart_read_bytes(UART_NUM_1, buffer, SERIAL_RX_BUFFER_SIZE, (100 / portTICK_PERIOD_MS));	
+		int len = uart_read_bytes(UART_NUM_1, buffer, RX_BUF_SIZE, (100 / portTICK_PERIOD_MS));	
 		if (len == 0) {
 			buffer[0] = 0;
 			continue;
+		}
+		if (buffer[0] == 'b' || buffer[0] == 'B')
+		{
+			int p = 0;
+			p++;
 		}
 		ComUart1.NumberOfCharactersReceived += len;
 		ComUart1.RxIndicator = 3;
@@ -99,7 +107,7 @@ void* serial_uart1_read_task(void* param)
 			//communication_add_buffer_to_ble_buffer(&bleServerDevice.TxBuffer, buffer, len);	
 		}
 	}
-	return NULL;
+	//return NULL;
 }
 void* serial_uart2_read_task(void* param)
 {
@@ -111,6 +119,7 @@ void* serial_uart2_read_task(void* param)
 			buffer[0] = 0;
 			continue;
 		}
+		
 		communication_add_buffer_to_serial_buffer(&ComUart2.RxBuffer, buffer, len);
 	}
 	return NULL;
@@ -142,6 +151,5 @@ void serial_init()
 	RawRxUrgentComBuffer.commandPtr =			RawRxUrgentComBuffer.command;
 	memset(RawRxUrgentComBuffer.buffer, 0, RawRxUrgentComBuffer.Buffer_Size);
 	
-	pthread_create(&uart1_thread, NULL, serial_uart1_read_task, NULL);
-	//pthread_create(&uart2_thread, NULL, serial_uart2_read_task, NULL);
+	xTaskCreate(serial_uart1_read_task, "uart_thread", SERIAL_RX_BUFFER_SIZE * 4, NULL, configMAX_PRIORITIES - 1, NULL); //configMAX_PRIORITIES - 1,
 }

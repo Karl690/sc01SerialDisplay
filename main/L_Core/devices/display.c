@@ -117,15 +117,15 @@ void display_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color
 	lcd.pushImageDMA(area->x1, area->y1, area->x2 - area->x1 + 1, area->y2 - area->y1 + 1, (lgfx::swap565_t *)&color_p->full);
 	lcd.endWrite();
 	lv_disp_flush_ready(disp);
-	if (display_screenshot)
-	{	
-		size_t len = (area->x2 - area->x1 + 1) * (area->y2 - area->y1 + 1); /* Number of pixels */
-		len *= sizeof(lv_color_t);
-		memcpy(dispaly_snapshot_buffer + area->y1 * w * sizeof(lv_color_t), color_p, len);
-		
-		if (area->y2 + 1 >= SCREEN_HEIGHT) display_screenshot_completed = true;
-		else display_screenshot_completed = false;
-	}
+//	if (display_screenshot)
+//	{	
+//		size_t len = (area->x2 - area->x1 + 1) * (area->y2 - area->y1 + 1); /* Number of pixels */
+//		len *= sizeof(lv_color_t);
+//		memcpy(dispaly_snapshot_buffer + area->y1 * w * sizeof(lv_color_t), color_p, len);
+//		
+//		if (area->y2 + 1 >= SCREEN_HEIGHT) display_screenshot_completed = true;
+//		else display_screenshot_completed = false;
+//	}
 }
 
 /* Setting up tick task for lvgl */
