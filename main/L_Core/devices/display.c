@@ -8,9 +8,6 @@ static const uint16_t screenHeight = SCREEN_HEIGHT;// TFT_HEIGHT;
 static lv_disp_draw_buf_t draw_buf;
 
 static lv_disp_t *disp;
-static lv_theme_t *theme_current;
-static lv_color_t bg_theme_color;
-
 uint8_t* dispaly_snapshot_buffer;
 
 static LGFX lcd; // declare display variable
@@ -85,16 +82,6 @@ esp_err_t InitLCDAndLVGL()
 	esp_timer_handle_t lv_periodic_timer;
 	ESP_ERROR_CHECK(esp_timer_create(&lv_periodic_timer_args, &lv_periodic_timer));
 	ESP_ERROR_CHECK(esp_timer_start_periodic(lv_periodic_timer, LV_TICK_PERIOD_MS * 1000));
-
-	//    // Setup theme
-	//    theme_current = lv_theme_default_init(disp, lv_palette_main(LV_PALETTE_BLUE),
-	//                                          lv_palette_main(LV_PALETTE_RED),
-	//                                          LV_USE_THEME_DEFAULT, /*Light or dark mode*/
-	//                                          &lv_font_montserrat_14);
-	//
-	//    //lv_disp_set_theme(disp, theme_current); /*Assign the theme to the display*/
-	//    //bg_theme_color = theme_current->flags & LV_USE_THEME_DEFAULT ? DARK_COLOR_CARD : LIGHT_COLOR_CARD;
-	//    bg_theme_color = theme_current->flags & LV_USE_THEME_DEFAULT ? lv_palette_darken(LV_PALETTE_GREY, 5) : lv_color_hex(0xBFBFBD);
 
 	int err = xTaskCreatePinnedToCore(gui_task, "lv gui", 1024 * 4, NULL, 10, &g_lvgl_task_handle, 0);
 	if (!err)

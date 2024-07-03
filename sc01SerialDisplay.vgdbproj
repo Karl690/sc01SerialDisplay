@@ -83,7 +83,9 @@
         <UseCCache>false</UseCCache>
         <DeviceID>ESP32S3</DeviceID>
       </ESPIDFExtension>
+      <DetectMissingSolutionConfigurations>false</DetectMissingSolutionConfigurations>
     </ProjectModeSettings>
+    <LoadCMakePresets>false</LoadCMakePresets>
   </Build>
   <CustomBuild>
     <PreSyncActions />
@@ -106,8 +108,8 @@
   <ImportedPropertySheets />
   <CodeSense>
     <Enabled>True</Enabled>
-    <CFLAGS>-Wno-format</CFLAGS>
-    <CXXFLAGS>-Wno-format</CXXFLAGS>
+    <CFLAGS>-Wno-format -Wno-shift-negative-value</CFLAGS>
+    <CXXFLAGS>-Wno-format -Wno-shift-negative-value</CXXFLAGS>
     <ExtraSettings>
       <HideErrorsInSystemHeaders>true</HideErrorsInSystemHeaders>
       <SupportLightweightReferenceAnalysis>true</SupportLightweightReferenceAnalysis>

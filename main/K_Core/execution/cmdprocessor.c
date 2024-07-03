@@ -99,7 +99,7 @@ void parseLineCommandData(char* cmd)
 void parseG6Command(char* cmd)
 {
 	//G6 B#\n
-	char code = cmd[3];
+	//char code = cmd[3];
 	int value = atoi(cmd + 4); //go to place of Number
 	switch (value)
 	{

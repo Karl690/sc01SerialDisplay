@@ -21,12 +21,7 @@ static void esp_gattc_cb(esp_gattc_cb_event_t event, esp_gatt_if_t gattc_if, esp
 static void gattc_profile_event_handler(esp_gattc_cb_event_t event, esp_gatt_if_t gattc_if, esp_ble_gattc_cb_param_t *param);
 
 /* One gatt-based profile one app_id and one gattc_if, this array will store the gattc_if returned by ESP_GATTS_REG_EVT */
-static struct gattc_profile_inst gl_profile_tab[BLE_CLIENT_PROFILE_NUM] = {
-	[BLE_CLIENT_PROFILE_APP_ID] = {
-	.gattc_cb = gattc_profile_event_handler,
-	.gattc_if = ESP_GATT_IF_NONE, /* Not get the gatt_if, so initial is ESP_GATT_IF_NONE */
-},
-};
+
 
 
 /*
@@ -45,36 +40,15 @@ static esp_bt_uuid_t remote_filter_service_uuid = {
 	.uuid = { .uuid16 = SPP_SERVICE_UUID, },
 };
 
-static esp_bt_uuid_t remote_write_char_uuid = {
-	.len = ESP_UUID_LEN_16,
-	.uuid = { .uuid16 = ESP_GATT_UUID_SPP_DATA_RECEIVE, },
-};
-
-static esp_bt_uuid_t remote_read_char_uuid = {
-	.len = ESP_UUID_LEN_16,
-	.uuid = { .uuid16 = ESP_GATT_UUID_SPP_DATA_NOTIFY, },
-};
 
 uint8_t is_client_connect = 0;
 uint16_t spp_client_conn_id = 0;
 uint16_t spp_client_mtu_size = 23;
-static uint16_t cmd = 0;
-static uint16_t spp_srv_start_handle = 0;
-static uint16_t spp_srv_end_handle = 0;
-static uint16_t spp_gattc_if = 0xff;
-static char * notify_value_p = NULL;
-static int notify_value_offset = 0;
-static int notify_value_count = 0;
-static uint16_t count = SPP_IDX_NB;
 static esp_gattc_db_elem_t *db = NULL;
-static QueueHandle_t cmd_reg_queue = NULL;
 QueueHandle_t spp_uart_queue = NULL;
 
 BleRemoteDevice* ble_client_paired_device = NULL;
-static esp_bt_uuid_t spp_client_service_uuid = {
-    .len  = ESP_UUID_LEN_16,
-    .uuid = {.uuid16 = SPP_SERVICE_UUID},
-};
+
 
 static void esp_gattc_cb(esp_gattc_cb_event_t event, esp_gatt_if_t gattc_if, esp_ble_gattc_cb_param_t *param)
 {

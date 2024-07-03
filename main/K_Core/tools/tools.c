@@ -5,8 +5,8 @@
 #include "L_Core/bluetooth/ble.h"
 #include "K_Core/communication/communication.h"
 
-ToolInfo toolInfo = { 0 };
-char tempstring[256] = { 0 };
+ToolInfo toolInfo;
+char tempstring[256];
 
 void tools_init()
 {

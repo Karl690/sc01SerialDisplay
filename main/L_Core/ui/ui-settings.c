@@ -217,7 +217,7 @@ void ui_settings_bluetooth_page_init()
 	lv_obj_t* obj = ui_create_label(ui_settings_bluetooth_page, "Bluetooth", &lv_font_montserrat_20);
 	lv_obj_set_align(obj, LV_ALIGN_TOP_MID);
 	
-	uint16_t x = 0, y = 40;
+	uint16_t y = 40;
 	obj = ui_create_label(ui_settings_bluetooth_page, "Status: ", &lv_font_montserrat_14);
 	lv_obj_set_pos(obj, 0, y+10);
 	obj = lv_switch_create(ui_settings_bluetooth_page);
@@ -248,7 +248,7 @@ void ui_settings_wifi_page_init()
 	lv_obj_t* obj = ui_create_label(ui_settings_wifi_page, "WIFI", &lv_font_montserrat_20);
 	lv_obj_set_align(obj, LV_ALIGN_TOP_MID);
 	
-	uint16_t x = 0, y = 40;
+	uint16_t y = 40;
 	obj = ui_create_label(ui_settings_wifi_page, "WIFI SSID: ", &lv_font_montserrat_14);
 	lv_obj_set_pos(obj, 0, y + 10);
 	
@@ -327,7 +327,7 @@ void ui_settings_opc_page_init()
 	lv_obj_t* obj = ui_create_label(ui_settings_opc_page, "OPC", &lv_font_montserrat_20);
 	lv_obj_set_align(obj, LV_ALIGN_TOP_MID);
 	
-	uint16_t x = 0, y = 40;
+	uint16_t y = 40;
 	obj = ui_create_label(ui_settings_opc_page, "User name: ", &lv_font_montserrat_14);
 	lv_obj_set_pos(obj, 0, y + 10);
 	obj = lv_textarea_create(ui_settings_opc_page);
@@ -384,7 +384,7 @@ void ui_settings_sdcard_page_init()
 	lv_obj_t* obj = ui_create_label(ui_settings_sdcard_page, "SD Card", &lv_font_montserrat_20);
 	lv_obj_set_align(obj, LV_ALIGN_TOP_MID);
 	
-	uint16_t x = 0, y = 40;
+	uint16_t y = 40;
 	obj = ui_create_label(ui_settings_sdcard_page, "Status: ", &lv_font_montserrat_14);
 	lv_obj_set_pos(obj, 0, y + 10);
 	obj = lv_switch_create(ui_settings_sdcard_page);	
@@ -468,7 +468,7 @@ void ui_settings_system_page_init()
 	lv_obj_t* obj = ui_create_label(ui_settings_system_page, "SYSTEM", &lv_font_montserrat_20);
 	lv_obj_set_align(obj, LV_ALIGN_TOP_MID);
 	
-	uint16_t x = 0, y = 40, step = SETTINGS_LINE_SPACE -10;
+	uint16_t y = 40, step = SETTINGS_LINE_SPACE -10;
 
 	obj = ui_create_label(ui_settings_system_page, "Revision: ", &lv_font_montserrat_14);
 	lv_obj_set_pos(obj, 0, y);
@@ -603,7 +603,7 @@ void ui_settings_screen_init()
 	ui_settings_update_configuratiion();
 	ui_settings_initialized = true;
 	
-	lv_timer_t * timer = lv_timer_create(ui_settings_update_data_timer_cb, 500, NULL);
+	lv_timer_create(ui_settings_update_data_timer_cb, 500, NULL);
 }
 
 void ui_settings_update_configuratiion()

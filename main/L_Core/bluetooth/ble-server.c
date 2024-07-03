@@ -71,8 +71,6 @@ typedef struct spp_receive_data_node {
 	struct spp_receive_data_node * next_node;
 }spp_receive_data_node_t;
 
-static spp_receive_data_node_t * temp_spp_recv_data_node_p1 = NULL;
-static spp_receive_data_node_t * temp_spp_recv_data_node_p2 = NULL;
 
 typedef struct spp_receive_data_buff {
 	int32_t node_num;
@@ -80,11 +78,7 @@ typedef struct spp_receive_data_buff {
 	spp_receive_data_node_t * first_node;
 }spp_receive_data_buff_t;
 
-static spp_receive_data_buff_t SppRecvDataBuff = {
-	.node_num = 0,
-	.buff_size = 0,
-	.first_node = NULL
-};
+
 
 static void gatts_profile_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_t gatts_if, esp_ble_gatts_cb_param_t *param);
 

@@ -170,7 +170,6 @@ void ui_ble_screen_init()
 	lv_obj_set_pos(obj, 250, 7);
 	
 	int x = 20, y = 70;
-	int button_w = 60;
 	int button_large_width = 100;
 	int button_h = 45;
 	int gap = 5;

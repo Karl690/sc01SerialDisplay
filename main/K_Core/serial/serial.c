@@ -118,7 +118,7 @@ void* serial_uart2_read_task(void* param)
 
 void serial_init()
 {
-	pthread_t uart1_thread, uart2_thread;
+	pthread_t uart1_thread;
 	// initialize uart devices
 	serial_uart_init(UART_NUM_1, systemconfig.serial.tx_pin, systemconfig.serial.rx_pin, systemconfig.serial.baud, SERIAL_UART1_RTS_PIN, SERIAL_UART1_CTS_PIN, false);
 	//serial_uart_init(UART_NUM_2, SERIAL_UART2_TXD_PIN, SERIAL_UART2_RXD_PIN, SERIAL_UART2_RTS_PIN, SERIAL_UART2_CTS_PIN, false);

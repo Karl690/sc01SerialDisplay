@@ -52,8 +52,8 @@ typedef struct {
 	uint32_t 		Offset; //for FUNC_MEMDUMPASCII if string is array variable(char a[]), it would be 1 otherwise 0. it is only for memory ascii function
 							//for FUNC_MEMDUMPHEX it means offset.	
 	uint8_t			Editable;  //enabled editing by user
-	uint8_t			ExposedOpc;  //expose this value to OPC
-	uint32_t		OpcNodeId; // Opc Node id,
+	//uint8_t			ExposedOpc;  //expose this value to OPC
+	//uint32_t		OpcNodeId; // Opc Node id,
 	void*		lv_object;
 } DisplayVariableInfo; //__attribute__((packed)) 
 

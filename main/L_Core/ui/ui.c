@@ -179,7 +179,7 @@ void ui_create_pct_title(lv_obj_t* parent, bool isPCT)
 	lv_obj_add_event_cb(logbutton, ui_event_title_button_cb, LV_EVENT_CLICKED, (void*)UI_BTN_HOME);		
 	lv_obj_set_pos(logbutton, 20, isPCT ? 108: 5);
 	
-	int x = 20, y = isPCT? 100: 70;
+	int x = 20;
 	int button_w = 60;
 	int button_large_width = 90;
 	int button_h = 50;

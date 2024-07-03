@@ -85,5 +85,5 @@ idf_component_register(
                 	bt
                 	fatfs
                 	sdmmc)            
-component_compile_options(-fexceptions -x c++ -O0)
+component_compile_options(-fexceptions -x c++ -O0 -Wno-shift-negative-value -Wno-missing-field-initializers -Wno-write-strings)
 set_property(TARGET ${COMPONENT_TARGET} PROPERTY CXX_STANDARD 17)

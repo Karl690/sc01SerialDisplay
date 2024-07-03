@@ -5,8 +5,8 @@
 #include "L_Core/bluetooth/ble.h"
 #include "L_Core/ui/ui-comm.h"
 
-ComBuffer RawRxComBuffer = { 0 };
-ComBuffer RawRxUrgentComBuffer = { 0 };
+ComBuffer RawRxComBuffer;
+ComBuffer RawRxUrgentComBuffer;
 COMPORT* MasterCommPort = &ComUart1; // &COMUSB; //used to specify which port is the master 
 uint8_t tx_check_flag = 0;
 uint8_t rx_check_flag = 0;

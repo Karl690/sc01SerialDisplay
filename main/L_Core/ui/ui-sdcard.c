@@ -12,7 +12,6 @@ lv_obj_t* title_label;
 char current_sdcard_path[MAXNAMLEN + 1] = SDCARD_MOUNT_POINT;
 void event_goto_directory_cb(lv_event_t* e)
 {
-	lv_obj_t * obj = lv_event_get_target(e);
 	char* dir_name = (char*)lv_event_get_user_data(e);
 	//(char*)obj->user_data;
 	if (!dir_name) return;
@@ -103,7 +102,6 @@ void ui_sdcard_load_directory(const char* path)
 			
 	DIR * d = opendir(path); // open the path
 	if (d == NULL) return; // if was not able, return
-	char d_path[MAXNAMLEN + 1]; // here I am using sprintf which is safer than strcat
 	struct dirent * dir; // for the directory entries
 	uint16_t cnt_folder = 0;
 	uint16_t cnt_file = 0;

@@ -3,8 +3,8 @@
 lv_obj_t* ui_control_screen;
 
 void ui_control_button_handler(lv_event_t * e) {
-	lv_event_code_t event_code = lv_event_get_code(e); 
-	lv_obj_t * target = lv_event_get_target(e);	
+//	lv_event_code_t event_code = lv_event_get_code(e); 
+//	lv_obj_t * target = lv_event_get_target(e);	
 }
 
 void ui_control_screen_init()

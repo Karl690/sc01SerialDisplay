@@ -201,8 +201,13 @@ void ui_pct_screen_init(void)
 void ui_pct_update_label_text(int index, char* value)
 {
 	//value = trim(value); //lvana: that is wrong , becasuse line sometimes includes space for example, "PWR1=     PWR2=     PWR2=     PWR4=     ",
-	if (index > 4) return;
 	if (!ui_pct_label_lines[index]) return;
+	if (index == 4)
+	{
+		// this is number line
+		strcpy(ui_pct_lines[index], value);
+		return;
+	}
 	int len = strlen(value);
 	int lineLength = 45;
 	for (int i = 0; i < len; i+= lineLength)
@@ -210,6 +215,7 @@ void ui_pct_update_label_text(int index, char* value)
 		if (index > 4) break;
 		int sublen = len - i;
 		if (sublen >= lineLength) sublen = lineLength; 
+		if (sublen < 10) return;
 		strncpy(ui_pct_lines[index], value+i, sublen);
 		index++;
 		

@@ -40,21 +40,21 @@ void ui_home_screen_init(void)
 {
 	
 	LV_IMG_DECLARE(btnhome_01);
-	LV_IMG_DECLARE(btnhome_02);
-	LV_IMG_DECLARE(btnhome_03);
+	// LV_IMG_DECLARE(btnhome_02);
+	// LV_IMG_DECLARE(btnhome_03);
 	LV_IMG_DECLARE(btnhome_04);
 	LV_IMG_DECLARE(btnhome_05);
 	LV_IMG_DECLARE(btnhome_06);
 	LV_IMG_DECLARE(btnhome_07);
-	LV_IMG_DECLARE(btnhome_08);
+	// LV_IMG_DECLARE(btnhome_08);
 	LV_IMG_DECLARE(settings);
-	LV_IMG_DECLARE(opc);
-	LV_IMG_DECLARE(variables);
+	// LV_IMG_DECLARE(opc);
+	//LV_IMG_DECLARE(variables);
 	LV_IMG_DECLARE(folder);
 	LV_IMG_DECLARE(controllers);
 	LV_IMG_DECLARE(bluetooth);
 	LV_IMG_DECLARE(pct);
-	LV_IMG_DECLARE(btn_about);
+	// LV_IMG_DECLARE(btn_about);
 	
 	ui_home_screen = lv_obj_create(NULL);
 	lv_obj_clear_flag(ui_home_screen, LV_OBJ_FLAG_SCROLLABLE); /// Flags
