@@ -86,7 +86,7 @@ void serial_uart1_read_task(void* param)
 	uint8_t buffer[RX_BUF_SIZE];
 	while (1)
 	{
-		int len = uart_read_bytes(UART_NUM_1, buffer, RX_BUF_SIZE, (100 / portTICK_PERIOD_MS));	
+		int len = uart_read_bytes(UART_NUM_1, buffer, RX_BUF_SIZE, 1);//(100 / portTICK_PERIOD_MS));	
 		if (len == 0) {
 			buffer[0] = 0;
 			continue;
@@ -114,7 +114,7 @@ void* serial_uart2_read_task(void* param)
 	uint8_t buffer[SERIAL_RX_BUFFER_SIZE]; // 2kbytes
 	while (1)
 	{
-		int len = uart_read_bytes(UART_NUM_2, buffer, SERIAL_RX_BUFFER_SIZE, (100 / portTICK_PERIOD_MS));	
+		int len = uart_read_bytes(UART_NUM_2, buffer, SERIAL_RX_BUFFER_SIZE, 1);	//(10 / portTICK_PERIOD_MS)
 		if (len == 0) {
 			buffer[0] = 0;
 			continue;
