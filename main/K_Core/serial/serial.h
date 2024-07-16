@@ -7,7 +7,7 @@
 #define SERIAL_485_RXD_PIN	(GPIO_NUM_1)
 #define SERIAL_485_RTS_PIN	(GPIO_NUM_2)
 
-#define SERIAL_UART1_TXD_PIN	(GPIO_NUM_12)  //GPIO_NUM_21 is for lvana
+#define SERIAL_UART1_TXD_PIN	(GPIO_NUM_21)  //GPIO_NUM_21 is for lvana
 #define SERIAL_UART1_RXD_PIN	(GPIO_NUM_14)   //GPIO_NUM_44= U0RXD //GPIO_NUM_21
 #define SERIAL_UART1_RTS_PIN	(UART_PIN_NO_CHANGE)		
 #define SERIAL_UART1_CTS_PIN	(UART_PIN_NO_CHANGE)
@@ -29,6 +29,8 @@ extern COMPORT ComUart2;
 extern COMPORT* MasterComPort;
 extern uint8_t serial_uart1_last_read_buffer[256];
 extern uint8_t serial_uart2_last_read_buffer[256];
+
+extern uint32_t serial_performance_timer;
 void serial_init();
 void serial_uart_update_config(uint8_t port, int tx_pin, int rx_pin, int baud);
 bool serial_uart_write_byte(COMPORT* comport, char byte);

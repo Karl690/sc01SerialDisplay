@@ -57,8 +57,10 @@ typedef struct
 	UI_SERIAL ui_serial;
 }UI_SETTINGS;
 
+extern lv_obj_t* ui_settings_serial_performance_value;
 extern lv_obj_t* ui_settings_screen;
 extern UI_SETTINGS ui_settings;
 
 void ui_settings_screen_init();
 void ui_settings_update_configuratiion();
+void ui_settings_serial_performance_update();

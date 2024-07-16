@@ -8,7 +8,7 @@
 #include "L_Core/ui/ui-pct01.h"
 #include "L_Core/ui/ui-bluetooth.h"
 #include "L_Core/bluetooth/ble.h"
-
+#include "L_Core/ui/ui-settings.h"
 uint32_t cmd_NextCommandInsertionPointer = 1;
 uint32_t cmd_CurrentPointer = 1;
 uint32_t cmd_CommandsInQue = 0;
@@ -20,6 +20,8 @@ void cmd_sequener()
 {
     if(!cmd_CommandsInQue) return;						//no commands to proces, so return
     char* cmd = &cmd_CommandsInQueBuffer[cmd_CurrentPointer][0];
+	ui_settings_serial_performance_update();
+		
 	int len = strlen(cmd);
 	char* g6_cmd = strstr(cmd, "G6"); // it only come from BLE Client
 	if (ble_run_mode == BLE_RUN_SERVER)

@@ -15,6 +15,8 @@ lv_obj_t* ui_settings_serial_page;
 lv_obj_t* ui_settings_system_page;
 lv_obj_t* settings_active_menu = NULL;
 lv_obj_t* settings_active_page = NULL;
+
+lv_obj_t* ui_settings_serial_performance_value = NULL;
 bool ui_settings_initialized = false;
 
 
@@ -121,6 +123,16 @@ void ui_settings_serial_load_event_cb(lv_event_t* e)
 	}
 	
 }
+
+void ui_settings_serial_performance_event_cb(lv_event_t* e)
+{
+	serial_performance_timer = xTaskGetTickCount();
+	for (int i = 0; i < 1000; i++)
+	{
+		communication_tx_commandline(MasterCommPort, "012345678900123456789001234567890012345678900123456789001234567890\n");
+	}
+	
+}
 void ui_settings_event_switch_cb(lv_event_t* e)
 {
 	lv_obj_t * obj = lv_event_get_target(e);
@@ -207,6 +219,15 @@ void ui_settings_update_data_timer_cb(lv_timer_t * timer)
 	//sprintf(tempString, "0x%02X 0x%02X 0x%02X 0x%02X", serial_rs485_last_read_buffer[0], serial_rs485_last_read_buffer[1], serial_rs485_last_read_buffer[2], serial_rs485_last_read_buffer[3]);
 	//lv_label_set_text(ui_settings.ui_serial.uart2_latest_received_text, (char*)serial_uart2_last_read_buffer);
 	
+}
+
+void ui_settings_serial_performance_update()
+{
+	if (serial_performance_timer == 0) return;
+	uint32_t end = xTaskGetTickCount();
+	uint32_t timeout = end - serial_performance_timer;
+	sprintf(ui_temp_string, "%d ms", (int)timeout);
+	lv_label_set_text(ui_settings_serial_performance_value, ui_temp_string); 
 }
 void ui_settings_bluetooth_page_init()
 {
@@ -452,11 +473,20 @@ void ui_settings_serial_page_init()
 	lv_dropdown_set_selected(obj, get_index_from_baud(systemconfig.serial.baud));
 	ui_settings.ui_serial.ui_baud = obj;
 	
+	obj = ui_create_button(ui_settings_serial_page, "Preset K", 100, 30, 3, &lv_font_montserrat_14, ui_settings_serial_load_event_cb, (void*)0);
+	lv_obj_set_pos(obj, 240, 60);
+	obj = ui_create_button(ui_settings_serial_page, "Preset L", 100, 30, 3, &lv_font_montserrat_14, ui_settings_serial_load_event_cb, (void*)1);
+	lv_obj_set_pos(obj, 240, 95);
+	
 	y += 40;
-	obj = ui_create_button(ui_settings_serial_page, "Preset K", 133, 30, 3, &lv_font_montserrat_14, ui_settings_serial_load_event_cb, (void*)0);
+	obj = ui_create_button(ui_settings_serial_page, "Performence", 133, 30, 3, &lv_font_montserrat_14, ui_settings_serial_performance_event_cb, (void*)0);
 	lv_obj_set_pos(obj, 2, y);
-	obj = ui_create_button(ui_settings_serial_page, "Preset L", 133, 30, 3, &lv_font_montserrat_14, ui_settings_serial_load_event_cb, (void*)1);
-	lv_obj_set_pos(obj, 150, y);
+	
+	obj = ui_create_label(ui_settings_serial_page, "Timeout: ", &lv_font_montserrat_14);
+	lv_obj_set_pos(obj, 200, y);
+	
+	obj = ui_create_label(ui_settings_serial_page, "0", &lv_font_montserrat_14);
+	lv_obj_set_pos(obj, 270, y); ui_settings_serial_performance_value = obj;
 }
 
 void ui_settings_system_page_init()
