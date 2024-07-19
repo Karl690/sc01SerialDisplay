@@ -70,9 +70,9 @@ lv_obj_t* ui_create_label(lv_obj_t* parent, const char* text, const lv_font_t* f
 
 void ui_change_button_color(lv_obj_t* button, uint32_t bg, uint32_t fg)
 {
-	lv_obj_set_style_bg_color(button, lv_color_hex(bg), LV_PART_MAIN);
 	lv_obj_t* label = lv_obj_get_child(button, 0);
 	if (label)	lv_obj_set_style_text_color(label, lv_color_hex(fg), LV_PART_MAIN);
+	lv_obj_set_style_bg_color(button, lv_color_hex(bg), LV_PART_MAIN);
 }
 lv_obj_t* ui_create_button(lv_obj_t* parent,
 	const char* text,
@@ -88,8 +88,9 @@ lv_obj_t* ui_create_button(lv_obj_t* parent,
 	lv_obj_set_width(button, w); /// 1
 	lv_obj_set_height(button, h); /// 1
 	
-	lv_obj_add_flag(button, LV_OBJ_FLAG_SCROLL_ON_FOCUS); /// Flags
-	lv_obj_clear_flag(button, LV_OBJ_FLAG_SCROLLABLE); /// Flags
+	//lv_obj_add_flag(button, LV_OBJ_FLAG_SCROLL_ON_FOCUS); /// Flags
+	lv_obj_add_flag(button, LV_OBJ_FLAG_EVENT_BUBBLE);
+	// lv_obj_clear_flag(button, LV_OBJ_FLAG_SCROLLABLE); /// Flags
 	lv_obj_set_style_radius(button, radius, LV_PART_MAIN | LV_STATE_DEFAULT);
 	lv_obj_set_style_bg_color(button, lv_color_hex(UI_BUTTON_NORMAL_BG_COLOR), LV_PART_MAIN | LV_STATE_DEFAULT);
 	lv_obj_set_style_bg_opa(button, 255, LV_PART_MAIN | LV_STATE_DEFAULT);

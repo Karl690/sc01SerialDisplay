@@ -21,6 +21,9 @@ bool ui_pct_is_refresh_line = false;
 char ui_pct_lines[5][46] = { 0 };
 char ui_pct_temp[256] = { 0 };
 
+bool ui_pct_is_update_button = false;
+uint32_t ui_pct_bg_color = 0x383838;
+uint32_t ui_pct_index_bg_color = 0;
 void ui_pct_clear_log()
 {
 	strcpy(ui_pct_temp, KEYBOARD_CLEAR_STRING);
@@ -42,7 +45,7 @@ void ui_pct_event_button_cb(lv_event_t* e)
 	uint8_t code = (uint8_t)(int)lv_event_get_user_data(e);
 	switch (code)
 	{
-	case KEYBOARD_0: strcpy(ui_pct_temp,KEYBOARD_0_STRING);		break;
+	case KEYBOARD_0: strcpy(ui_pct_temp,KEYBOARD_0_STRING);	break;
 	case KEYBOARD_1: strcpy(ui_pct_temp, KEYBOARD_1_STRING); break;
 	case KEYBOARD_2: strcpy(ui_pct_temp, KEYBOARD_2_STRING); break;
 	case KEYBOARD_3: strcpy(ui_pct_temp, KEYBOARD_3_STRING); break;
@@ -91,10 +94,17 @@ void ui_pct_event_button_cb(lv_event_t* e)
 
 void ui_pct_update_lines_timer(lv_timer_t * timer)
 {
+	if (ui_pct_is_update_button) {
+		ui_change_button_color(ui_pct_keyboard[ui_pct_index_bg_color], ui_pct_bg_color, UI_BUTTON_NORMAL_FG_COLOR);
+		ui_pct_is_update_button = false;
+	}
+	
 	if (!ui_pct_is_refresh_line) return;
 	for (int i = 0; i < 5; i++)
 		lv_label_set_text(ui_pct_label_lines[i], ui_pct_lines[i]);
 	ui_pct_is_refresh_line = false;
+	
+	
 }
 
 void label_event_handler(lv_event_t * e) {
@@ -188,14 +198,12 @@ void ui_pct_screen_init(void)
 	obj = ui_create_button(ui_pct_screen, "0", button_w, button_h, 2, font, ui_pct_event_button_cb, (void*)KEYBOARD_0);
 	lv_obj_set_pos(obj, x, y); x += button_w + gap; ui_pct_keyboard[KEYBOARD_0] = obj;
 	
-		
-	
 	ui_pct_label_lines[0] = ui_pct_line_0;
 	ui_pct_label_lines[1] = ui_pct_line_1;
 	ui_pct_label_lines[2] = ui_pct_line_2;
 	ui_pct_label_lines[3] = ui_pct_line_3;
 	ui_pct_label_lines[4] = ui_pct_line_4;
-	lv_timer_create(ui_pct_update_lines_timer, 500, NULL);
+	lv_timer_create(ui_pct_update_lines_timer, 10, NULL);
 }
 
 void ui_pct_update_label_text(int index, char* value)
@@ -241,6 +249,7 @@ void ui_pct_update_button_color(int index, char* value)
 {
 	if (index >= KEYBOARD_HOME) return;
 	if (!ui_pct_keyboard[index]) return;
-	uint32_t color = atoi(value);
-	ui_change_button_color(ui_pct_keyboard[index], color, UI_BUTTON_NORMAL_FG_COLOR);
+	ui_pct_index_bg_color = index;
+	ui_pct_bg_color = atoi(value);
+	ui_pct_is_update_button = true;
 }
